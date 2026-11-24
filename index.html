@@ -623,6 +623,61 @@
       margin-top: 8px;
     }
 
+
+    .time-pick-btn {
+      width: 100%;
+      min-height: 50px;
+      padding: 10px 12px;
+      font-size: 17px;
+      font-weight: 700;
+      font-family: inherit;
+      border: 2px solid var(--border);
+      border-radius: var(--btn-radius);
+      background: var(--bg);
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .tp-grid-hours {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin: 8px 0 12px;
+    }
+
+    .tp-grid-mins {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin: 8px 0 10px;
+    }
+
+    .tp-cell {
+      min-height: 46px;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .tp-cell.selected {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    body.dark .tp-cell.selected {
+      color: #0d141b;
+    }
+
     .chip-btn {
       min-height: 40px;
       padding: 6px 12px;
@@ -671,12 +726,14 @@
         </div>
         <div class="btn-grid-2">
           <div>
-            <label class="field-label" for="sleep-bed">Bed Time</label>
-            <input type="time" id="sleep-bed" />
+            <label class="field-label">Bed Time</label>
+            <button type="button" class="time-pick-btn" id="sleep-bed-btn"><span>Tap to set</span><span>&#128338;</span></button>
+            <input type="hidden" id="sleep-bed" />
           </div>
           <div>
-            <label class="field-label" for="sleep-wake">Wake Time</label>
-            <input type="time" id="sleep-wake" />
+            <label class="field-label">Wake Time</label>
+            <button type="button" class="time-pick-btn" id="sleep-wake-btn"><span>Tap to set</span><span>&#128338;</span></button>
+            <input type="hidden" id="sleep-wake" />
           </div>
         </div>
         <div class="input-row">
@@ -702,7 +759,7 @@
           <button type="button" class="btn btn-primary" data-water="48">+48 oz (Full)</button>
         </div>
         <div class="input-row">
-          <input type="number" id="water-custom" class="flex-1" min="1" max="200" placeholder="Custom oz" inputmode="numeric" />
+          <input type="number" id="water-custom" class="flex-1" min="0.1" max="200" step="any" placeholder="Custom oz (e.g. 16.9)" inputmode="decimal" />
           <button type="button" class="btn btn-outline" id="btn-water-add">Add oz</button>
         </div>
         <div class="log-list" id="water-list"></div>
@@ -738,7 +795,7 @@
           <button type="button" class="btn btn-amber" data-pee-oz="16">+16 oz</button>
         </div>
         <div class="input-row">
-          <input type="number" id="pee-custom" class="flex-1" min="1" max="100" placeholder="Custom oz" inputmode="numeric" />
+          <input type="number" id="pee-custom" class="flex-1" min="0.1" max="100" step="any" placeholder="Custom oz (e.g. 13.6)" inputmode="decimal" />
           <button type="button" class="btn btn-outline" id="btn-pee-add">Log Pee</button>
         </div>
         <div class="in-out-banner" id="in-out-banner">
@@ -757,8 +814,23 @@
         </div>
         <p class="muted-note" style="margin: 0 0 10px;">1 shot = 1 teaspoon instant coffee (~100 mg caffeine)</p>
         <div class="btn-grid-2">
-          <button type="button" class="btn btn-amber" id="btn-coffee-1">+1 Shot</button>
-          <button type="button" class="btn btn-outline" id="btn-coffee-3">+3 Shots (Smoothie)</button>
+          <button type="button" class="btn btn-amber" id="btn-coffee-1">+1 Shot (Now)</button>
+          <button type="button" class="btn btn-outline" id="btn-coffee-3">+3 Shots (Now)</button>
+        </div>
+        <div class="input-row" style="margin-top: 10px;">
+          <div class="flex-1">
+            <label class="field-label">Or Log Earlier Time</label>
+            <button type="button" class="time-pick-btn" id="coffee-time-btn"><span>Now</span><span>&#128338;</span></button>
+            <input type="hidden" id="coffee-custom-time" />
+          </div>
+          <div class="flex-1">
+            <label class="field-label" for="coffee-custom-shots">Shots</label>
+            <input type="number" id="coffee-custom-shots" min="1" max="20" value="3" inputmode="numeric" />
+          </div>
+        </div>
+        <div class="input-row">
+          <input type="text" id="coffee-custom-note" class="flex-2" placeholder="Note (e.g. 14-oz bottle)" />
+          <button type="button" class="btn btn-outline flex-1" id="btn-coffee-custom">Log Coffee</button>
         </div>
         <div class="log-list" id="coffee-list"></div>
       </div>
@@ -866,8 +938,9 @@
             <input type="date" id="session-date" />
           </div>
           <div>
-            <label class="field-label" for="session-time">Time</label>
-            <input type="time" id="session-time" />
+            <label class="field-label">Time</label>
+            <button type="button" class="time-pick-btn" id="session-time-btn"><span>Tap to set</span><span>&#128338;</span></button>
+            <input type="hidden" id="session-time" />
           </div>
         </div>
         <div style="margin-top: 8px;">
@@ -993,6 +1066,33 @@
     </div>
   </div>
 
+  <!-- Custom Time Picker Modal -->
+  <div class="modal-backdrop" id="time-modal">
+    <div class="modal-box">
+      <div class="card-header" style="margin-bottom: 6px;">
+        <h2 id="tp-title" style="margin: 0;">Set Time</h2>
+        <span class="stat-pill blue" id="tp-preview">12:00 PM</span>
+      </div>
+      <div class="btn-grid-2" style="margin-bottom: 10px;">
+        <button type="button" class="tp-cell" id="tp-am">AM</button>
+        <button type="button" class="tp-cell" id="tp-pm">PM</button>
+      </div>
+      <label class="field-label">Hour</label>
+      <div class="tp-grid-hours" id="tp-hours"></div>
+      <label class="field-label">Minute</label>
+      <div class="tp-grid-mins" id="tp-mins"></div>
+      <div class="input-row" style="margin-top: 6px;">
+        <button type="button" class="btn btn-outline btn-sm flex-1" id="tp-m-minus">-1 min</button>
+        <button type="button" class="btn btn-outline btn-sm flex-1" id="tp-m-plus">+1 min</button>
+      </div>
+      <div class="input-row" style="margin-top: 12px;">
+        <button type="button" class="btn btn-outline" id="tp-clear">Clear</button>
+        <button type="button" class="btn btn-outline" id="tp-cancel">Cancel</button>
+        <button type="button" class="btn btn-green flex-1" id="tp-save">Save Time</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Confirm Modal -->
   <div class="modal-backdrop" id="confirm-modal">
     <div class="modal-box">
@@ -1013,6 +1113,10 @@
       var walkInterval = null;
       var simpleTimerInterval = null;
       var pendingConfirmFn = null;
+
+      function round1(n) {
+        return Math.round((Number(n) || 0) * 10) / 10;
+      }
 
       function pad(n) {
         return n < 10 ? "0" + n : String(n);
@@ -1209,12 +1313,14 @@
         // Sleep
         document.getElementById("sleep-bed").value = day.sleepBed || "";
         document.getElementById("sleep-wake").value = day.sleepWake || "";
+        document.getElementById("sleep-bed-btn").firstElementChild.textContent = day.sleepBed ? formatTime12(day.sleepBed) : "Tap to set";
+        document.getElementById("sleep-wake-btn").firstElementChild.textContent = day.sleepWake ? formatTime12(day.sleepWake) : "Tap to set";
         var sleepMins = calcSleepMinutes(day.sleepBed, day.sleepWake);
         document.getElementById("sleep-duration-pill").textContent =
           sleepMins !== null ? formatDurationMins(sleepMins) : "Not logged";
 
         // Water
-        var waterOz = day.water.reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0);
+        var waterOz = round1(day.water.reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0));
         document.getElementById("water-total-pill").textContent = waterOz + " / 72 oz";
         var pct = Math.min(100, Math.round((waterOz / 72) * 100));
         document.getElementById("water-progress").style.width = pct + "%";
@@ -1229,9 +1335,9 @@
         }).join("");
 
         // Pee
-        var peeOz = day.pee.reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0);
+        var peeOz = round1(day.pee.reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0));
         document.getElementById("pee-total-pill").textContent = peeOz + " oz out";
-        var net = waterOz - peeOz;
+        var net = round1(waterOz - peeOz);
         document.getElementById("in-out-banner").innerHTML =
           '<span>Water In: ' + waterOz + ' oz</span>' +
           '<span>Pee Out: ' + peeOz + ' oz</span>' +
@@ -1253,6 +1359,7 @@
           return '<div class="log-row">' +
             '<div class="log-row-main"><div class="log-row-title">+' + item.shots + ' shot' + (item.shots === 1 ? "" : "s") + (item.note ? " (" + escHtml(item.note) + ")" : "") + '</div>' +
             '<div class="log-row-sub">' + formatTime12(item.time) + '</div></div>' +
+            '<button type="button" class="btn btn-outline btn-sm" data-edit-coffee-time="' + item.id + '">Time</button>' +
             '<button type="button" class="del-btn" data-del-type="coffee" data-del-id="' + item.id + '" aria-label="Delete coffee entry">&times;</button>' +
             '</div>';
         }).join("");
@@ -1313,6 +1420,7 @@
         if (!document.getElementById("session-time").value) {
           document.getElementById("session-time").value = nowTimeStr();
         }
+        document.getElementById("session-time-btn").firstElementChild.textContent = formatTime12(document.getElementById("session-time").value);
         document.getElementById("session-list").innerHTML = day.sessions.map(function (item) {
           return '<div class="log-row">' +
             '<div class="log-row-main"><div class="log-row-title">' + escHtml(item.date) + ' at ' + formatTime12(item.time) + '</div>' +
@@ -1363,8 +1471,8 @@
         }
         list.innerHTML = keys.map(function (k) {
           var d = state.days[k];
-          var w = (d.water || []).reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0);
-          var p = (d.pee || []).reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0);
+          var w = round1((d.water || []).reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0));
+          var p = round1((d.pee || []).reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0));
           var c = (d.coffee || []).reduce(function (s, x) { return s + (Number(x.shots) || 0); }, 0);
           var cal = (d.food || []).reduce(function (s, x) { return s + (Number(x.cal) || 0); }, 0);
           return '<div class="log-row">' +
@@ -1466,9 +1574,9 @@
           lines.push("Sleep: Not logged");
         }
 
-        var waterOz = d.water.reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0);
-        var peeOz = d.pee.reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0);
-        var net = waterOz - peeOz;
+        var waterOz = round1(d.water.reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0));
+        var peeOz = round1(d.pee.reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0));
+        var net = round1(waterOz - peeOz);
         lines.push("Water In: " + waterOz + " oz / 72 oz target");
         if (d.pee.length > 0) {
           var colors = d.pee.map(function (p) { return p.oz + "oz " + p.color + " (" + formatTime12(p.time) + ")"; }).join(", ");
@@ -1479,7 +1587,14 @@
         lines.push("In vs Out: " + waterOz + " oz in vs " + peeOz + " oz out (Net " + (net >= 0 ? "+" : "") + net + " oz)");
 
         var shots = d.coffee.reduce(function (s, x) { return s + (Number(x.shots) || 0); }, 0);
-        lines.push("Coffee: " + shots + " shot" + (shots === 1 ? "" : "s") + " (~" + (shots * 100) + " mg caffeine)");
+        if (d.coffee.length > 0) {
+          var coffeeDetails = d.coffee.map(function (c) {
+            return c.shots + " shot" + (c.shots === 1 ? "" : "s") + (c.note ? " " + c.note : "") + " (" + formatTime12(c.time) + ")";
+          }).join(", ");
+          lines.push("Coffee: " + shots + " shot" + (shots === 1 ? "" : "s") + " (~" + (shots * 100) + " mg) [" + coffeeDetails + "]");
+        } else {
+          lines.push("Coffee: 0 shots (0 mg)");
+        }
 
         lines.push("Prayer & Bible: Morning Prayer [" + (d.faith.morning ? "x" : " ") + "], Bible Reading [" + (d.faith.bible ? "x" : " ") + "], Evening Prayer [" + (d.faith.evening ? "x" : " ") + "]");
 
@@ -1627,12 +1742,12 @@
       }
       document.querySelectorAll("[data-water]").forEach(function (btn) {
         btn.addEventListener("click", function () {
-          addWater(parseInt(btn.getAttribute("data-water"), 10));
+          addWater(parseFloat(btn.getAttribute("data-water")));
         });
       });
       document.getElementById("btn-water-add").addEventListener("click", function () {
         var inp = document.getElementById("water-custom");
-        var val = parseInt(inp.value, 10);
+        var val = round1(parseFloat(inp.value));
         if (!val || val <= 0) return showToast("Enter ounces first");
         addWater(val);
         inp.value = "";
@@ -1655,26 +1770,42 @@
       }
       document.querySelectorAll("[data-pee-oz]").forEach(function (btn) {
         btn.addEventListener("click", function () {
-          addPee(parseInt(btn.getAttribute("data-pee-oz"), 10));
+          addPee(parseFloat(btn.getAttribute("data-pee-oz")));
         });
       });
       document.getElementById("btn-pee-add").addEventListener("click", function () {
         var inp = document.getElementById("pee-custom");
-        var val = parseInt(inp.value, 10);
+        var val = round1(parseFloat(inp.value));
         if (!val || val <= 0) return showToast("Enter ounces first");
         addPee(val);
         inp.value = "";
       });
 
       // Coffee
-      function addCoffee(shots, note) {
-        getDay().coffee.push({ id: Date.now() + Math.random(), shots: shots, note: note || "", time: nowTimeStr() });
+      function addCoffee(shots, note, customTime) {
+        getDay().coffee.push({ id: Date.now() + Math.random(), shots: shots, note: note || "", time: customTime || nowTimeStr() });
         saveState();
         renderAll();
         showToast("+" + shots + " coffee shot" + (shots === 1 ? "" : "s"));
       }
       document.getElementById("btn-coffee-1").addEventListener("click", function () { addCoffee(1, ""); });
       document.getElementById("btn-coffee-3").addEventListener("click", function () { addCoffee(3, "Smoothie"); });
+      document.getElementById("coffee-time-btn").addEventListener("click", function () {
+        var cur = document.getElementById("coffee-custom-time").value || nowTimeStr();
+        openTimePicker("Coffee Time", cur, function (val) {
+          document.getElementById("coffee-custom-time").value = val;
+          document.getElementById("coffee-time-btn").firstElementChild.textContent = val ? formatTime12(val) : "Now";
+        });
+      });
+      document.getElementById("btn-coffee-custom").addEventListener("click", function () {
+        var shots = parseInt(document.getElementById("coffee-custom-shots").value, 10) || 1;
+        var note = document.getElementById("coffee-custom-note").value.trim();
+        var t = document.getElementById("coffee-custom-time").value || nowTimeStr();
+        addCoffee(shots, note, t);
+        document.getElementById("coffee-custom-note").value = "";
+        document.getElementById("coffee-custom-time").value = "";
+        document.getElementById("coffee-time-btn").firstElementChild.textContent = "Now";
+      });
 
       // Faith
       document.getElementById("chk-morning-prayer").addEventListener("change", function (e) {
@@ -1766,7 +1897,9 @@
       // Sessions
       document.getElementById("btn-session-now").addEventListener("click", function () {
         document.getElementById("session-date").value = state.currentDate;
-        document.getElementById("session-time").value = nowTimeStr();
+        var t = nowTimeStr();
+        document.getElementById("session-time").value = t;
+        document.getElementById("session-time-btn").firstElementChild.textContent = formatTime12(t);
       });
       document.getElementById("btn-session-add").addEventListener("click", function () {
         var date = document.getElementById("session-date").value || state.currentDate;
@@ -1868,6 +2001,22 @@
           renderAll();
           return;
         }
+        var editCoffeeId = e.target.getAttribute("data-edit-coffee-time");
+        if (editCoffeeId) {
+          var day = getDay();
+          var entry = day.coffee.find(function (x) { return String(x.id) === editCoffeeId; });
+          if (entry) {
+            openTimePicker("Edit Coffee Time", entry.time, function (val) {
+              if (val) {
+                entry.time = val;
+                saveState();
+                renderAll();
+                showToast("Coffee time updated");
+              }
+            });
+          }
+          return;
+        }
         var jump = e.target.getAttribute("data-jump-date");
         if (jump) {
           state.currentDate = jump;
@@ -1949,6 +2098,113 @@
           saveState();
           renderAll();
           showToast("All data erased");
+        });
+      });
+
+      // Custom In-Page Time Picker (mobile-friendly at any font size)
+      var tpState = { target: null, h12: 12, m: 0, ampm: "PM", onSave: null };
+      (function initTimePicker() {
+        var hrsEl = document.getElementById("tp-hours");
+        for (var h = 1; h <= 12; h++) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "tp-cell";
+          b.setAttribute("data-tp-h", h);
+          b.textContent = h;
+          hrsEl.appendChild(b);
+        }
+        var minsEl = document.getElementById("tp-mins");
+        for (var m = 0; m < 60; m += 5) {
+          var mb = document.createElement("button");
+          mb.type = "button";
+          mb.className = "tp-cell";
+          mb.setAttribute("data-tp-m", m);
+          mb.textContent = ":" + pad(m);
+          minsEl.appendChild(mb);
+        }
+      })();
+
+      function renderTimePicker() {
+        document.getElementById("tp-preview").textContent = tpState.h12 + ":" + pad(tpState.m) + " " + tpState.ampm;
+        document.getElementById("tp-am").classList.toggle("selected", tpState.ampm === "AM");
+        document.getElementById("tp-pm").classList.toggle("selected", tpState.ampm === "PM");
+        document.querySelectorAll("[data-tp-h]").forEach(function (b) {
+          b.classList.toggle("selected", parseInt(b.getAttribute("data-tp-h"), 10) === tpState.h12);
+        });
+        document.querySelectorAll("[data-tp-m]").forEach(function (b) {
+          b.classList.toggle("selected", parseInt(b.getAttribute("data-tp-m"), 10) === tpState.m);
+        });
+      }
+
+      function openTimePicker(title, currentHHMM, onSave) {
+        document.getElementById("tp-title").textContent = title;
+        var use = currentHHMM || nowTimeStr();
+        var parts = use.split(":");
+        var h24 = parseInt(parts[0], 10);
+        var m = parseInt(parts[1], 10);
+        if (isNaN(h24)) h24 = 12;
+        if (isNaN(m)) m = 0;
+        tpState.ampm = h24 >= 12 ? "PM" : "AM";
+        tpState.h12 = h24 % 12 || 12;
+        tpState.m = m;
+        tpState.onSave = onSave;
+        renderTimePicker();
+        document.getElementById("time-modal").classList.add("open");
+      }
+
+      document.getElementById("tp-am").addEventListener("click", function () { tpState.ampm = "AM"; renderTimePicker(); });
+      document.getElementById("tp-pm").addEventListener("click", function () { tpState.ampm = "PM"; renderTimePicker(); });
+      document.getElementById("tp-hours").addEventListener("click", function (e) {
+        var h = e.target.getAttribute("data-tp-h");
+        if (h) { tpState.h12 = parseInt(h, 10); renderTimePicker(); }
+      });
+      document.getElementById("tp-mins").addEventListener("click", function (e) {
+        var m = e.target.getAttribute("data-tp-m");
+        if (m !== null) { tpState.m = parseInt(m, 10); renderTimePicker(); }
+      });
+      document.getElementById("tp-m-minus").addEventListener("click", function () {
+        tpState.m = (tpState.m + 59) % 60;
+        renderTimePicker();
+      });
+      document.getElementById("tp-m-plus").addEventListener("click", function () {
+        tpState.m = (tpState.m + 1) % 60;
+        renderTimePicker();
+      });
+      document.getElementById("tp-cancel").addEventListener("click", function () {
+        document.getElementById("time-modal").classList.remove("open");
+      });
+      document.getElementById("tp-clear").addEventListener("click", function () {
+        document.getElementById("time-modal").classList.remove("open");
+        if (tpState.onSave) tpState.onSave("");
+      });
+      document.getElementById("tp-save").addEventListener("click", function () {
+        var h24 = tpState.h12 % 12;
+        if (tpState.ampm === "PM") h24 += 12;
+        var val = pad(h24) + ":" + pad(tpState.m);
+        document.getElementById("time-modal").classList.remove("open");
+        if (tpState.onSave) tpState.onSave(val);
+      });
+
+      document.getElementById("sleep-bed-btn").addEventListener("click", function () {
+        openTimePicker("Set Bed Time", getDay().sleepBed, function (val) {
+          getDay().sleepBed = val;
+          saveState();
+          renderAll();
+        });
+      });
+      document.getElementById("sleep-wake-btn").addEventListener("click", function () {
+        openTimePicker("Set Wake Time", getDay().sleepWake, function (val) {
+          getDay().sleepWake = val;
+          saveState();
+          renderAll();
+        });
+      });
+      document.getElementById("session-time-btn").addEventListener("click", function () {
+        openTimePicker("Set Session Time", document.getElementById("session-time").value, function (val) {
+          if (val) {
+            document.getElementById("session-time").value = val;
+            document.getElementById("session-time-btn").firstElementChild.textContent = formatTime12(val);
+          }
         });
       });
 
