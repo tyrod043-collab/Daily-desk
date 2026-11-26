@@ -1,0 +1,2772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Daily Desk - Offline Habit &amp; Routine Tracker</title>
+  <style>
+    :root {
+      --bg: #f5f2eb;
+      --surface: #ffffff;
+      --surface-2: #ede8dd;
+      --border: #d6cfc2;
+      --text: #1c2228;
+      --text-muted: #525b66;
+      --primary: #1d5e8a;
+      --primary-hover: #16496b;
+      --primary-soft: #e3f0f8;
+      --green: #186a3b;
+      --green-soft: #e4f3ea;
+      --amber: #9c4a08;
+      --amber-soft: #fbeee2;
+      --red: #a93226;
+      --red-soft: #fbeae8;
+      --purple: #5b3a82;
+      --purple-soft: #f0ebf8;
+      --shadow: 0 2px 8px rgba(28, 34, 40, 0.06);
+      --radius: 16px;
+      --btn-radius: 12px;
+    }
+
+    body.dark {
+      --bg: #121519;
+      --surface: #1b2026;
+      --surface-2: #242a32;
+      --border: #323a45;
+      --text: #f0f2f5;
+      --text-muted: #a6b0bc;
+      --primary: #5aa9e6;
+      --primary-hover: #7bc0f5;
+      --primary-soft: #1b3145;
+      --green: #4ade80;
+      --green-soft: #173323;
+      --amber: #fbbf24;
+      --amber-soft: #362914;
+      --red: #f87171;
+      --red-soft: #3b1d1d;
+      --purple: #c084fc;
+      --purple-soft: #2e2040;
+      --shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 17px;
+      line-height: 1.45;
+      overflow-x: hidden;
+    }
+
+    body {
+      padding-bottom: 92px;
+    }
+
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .header-top {
+      max-width: 820px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 19px;
+      flex-shrink: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .offline-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .date-bar {
+      max-width: 820px;
+      margin: 10px auto 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: var(--surface-2);
+      padding: 6px;
+      border-radius: 12px;
+    }
+
+    .date-label {
+      font-weight: 700;
+      font-size: 16px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 19px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stat-pill {
+      font-size: 15px;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .stat-pill.blue { background: var(--primary-soft); color: var(--primary); }
+    .stat-pill.green { background: var(--green-soft); color: var(--green); }
+    .stat-pill.amber { background: var(--amber-soft); color: var(--amber); }
+    .stat-pill.purple { background: var(--purple-soft); color: var(--purple); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 48px;
+      padding: 10px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: var(--btn-radius);
+      border: 2px solid transparent;
+      cursor: pointer;
+      background: var(--surface-2);
+      color: var(--text);
+      transition: transform 0.08s ease, opacity 0.15s ease;
+      text-align: center;
+      font-family: inherit;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-sm {
+      min-height: 40px;
+      padding: 6px 12px;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    body.dark .btn-primary {
+      color: #0d141b;
+    }
+
+    .btn-green {
+      background: var(--green);
+      color: #ffffff;
+    }
+
+    body.dark .btn-green {
+      color: #0b1910;
+    }
+
+    .btn-amber {
+      background: var(--amber);
+      color: #ffffff;
+    }
+
+    body.dark .btn-amber {
+      color: #1a1204;
+    }
+
+    .btn-red {
+      background: var(--red);
+      color: #ffffff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .mic-btn {
+      min-width: 52px;
+      padding: 10px 12px;
+      font-size: 20px;
+    }
+
+    .mic-btn.listening {
+      background: var(--red);
+      border-color: var(--red);
+      color: #ffffff;
+      animation: mic-pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes mic-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .btn-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: stretch;
+      margin-top: 8px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="time"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      min-height: 48px;
+      padding: 10px 12px;
+      font-size: 16px;
+      font-family: inherit;
+      border: 2px solid var(--border);
+      border-radius: var(--btn-radius);
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 82px;
+      resize: vertical;
+    }
+
+    .flex-1 { flex: 1 1 140px; }
+    .flex-2 { flex: 2 1 200px; }
+
+    label.field-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 14px;
+      background: var(--surface-2);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 8px 0 12px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .color-btn {
+      min-height: 52px;
+      border-radius: var(--btn-radius);
+      border: 3px solid var(--border);
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 6px 4px;
+      background: var(--surface-2);
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    .color-btn.selected {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-soft);
+    }
+
+    .swatch {
+      width: 24px;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.2);
+    }
+
+    .swatch-clear { background: #eef6fa; }
+    .swatch-light { background: #f9eb9b; }
+    .swatch-medium { background: #e6b83a; }
+    .swatch-dark { background: #9c6216; }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--surface-2);
+      margin-bottom: 8px;
+      cursor: pointer;
+      min-height: 54px;
+    }
+
+    .check-item input[type="checkbox"] {
+      width: 26px;
+      height: 26px;
+      accent-color: var(--green);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .check-text {
+      font-size: 17px;
+      font-weight: 700;
+      flex: 1;
+    }
+
+    .check-item.done .check-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .log-list {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .log-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--surface-2);
+      border-radius: 12px;
+      font-size: 15px;
+    }
+
+    .log-row-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .log-row-title {
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .log-row-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .del-btn {
+      min-width: 40px;
+      min-height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--red);
+      font-weight: 800;
+      font-size: 16px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .big-timer {
+      font-size: 42px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+      padding: 14px 10px;
+      background: var(--surface-2);
+      border-radius: 14px;
+      margin: 10px 0;
+      letter-spacing: 0.03em;
+    }
+
+    .verse-box {
+      background: var(--surface-2);
+      border-left: 4px solid var(--green);
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 15px;
+    }
+
+    .in-out-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 10px 12px;
+      background: var(--primary-soft);
+      border-radius: 12px;
+      margin-top: 10px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      padding: 6px 6px max(6px, env(safe-area-inset-bottom));
+      gap: 6px;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+    }
+
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      min-height: 58px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .nav-btn.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .nav-btn svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .toast {
+      position: fixed;
+      top: 74px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 60;
+      background: #1c2228;
+      color: #ffffff;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 15px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      display: none;
+      max-width: 90vw;
+      text-align: center;
+    }
+
+    body.dark .toast {
+      background: #f0f2f5;
+      color: #121519;
+    }
+
+    .loud-alert {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 90;
+      background: #b3261e;
+      color: #ffffff;
+      padding: 18px 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      text-align: center;
+    }
+
+    .loud-alert-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .loud-alert-text {
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 70;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      width: 100%;
+      max-width: 560px;
+      max-height: 86vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .modal-box h2 {
+      margin: 0 0 10px;
+      font-size: 20px;
+    }
+
+    .summary-pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.45;
+      max-height: 45vh;
+      overflow-y: auto;
+    }
+
+    .muted-note {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+
+    .time-pick-btn {
+      width: 100%;
+      min-height: 50px;
+      padding: 10px 12px;
+      font-size: 17px;
+      font-weight: 700;
+      font-family: inherit;
+      border: 2px solid var(--border);
+      border-radius: var(--btn-radius);
+      background: var(--bg);
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .tp-grid-hours {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin: 8px 0 12px;
+    }
+
+    .tp-grid-mins {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin: 8px 0 10px;
+    }
+
+    .tp-cell {
+      min-height: 46px;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .tp-cell.selected {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    body.dark .tp-cell.selected {
+      color: #0d141b;
+    }
+
+    .chip-btn {
+      min-height: 40px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    /* v3: Verse of the Day */
+    .verse-day {
+      background: var(--surface-2);
+      border-left: 4px solid var(--primary);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 16px;
+    }
+
+    .verse-day-text {
+      font-style: italic;
+      margin: 0 0 6px;
+    }
+
+    .verse-day-ref {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    /* v3: Mood & Energy check-in */
+    .energy-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin: 10px 0 4px;
+    }
+
+    .energy-btn {
+      min-height: 54px;
+      border-radius: var(--btn-radius);
+      border: 3px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 20px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .energy-btn.selected {
+      border-color: var(--green);
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    /* v3: Money & Bills countdowns */
+    .bill-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--surface-2);
+      margin-bottom: 8px;
+      min-height: 54px;
+    }
+
+    .bill-row input[type="checkbox"] {
+      width: 26px;
+      height: 26px;
+      accent-color: var(--green);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .bill-row.paid .bill-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .bill-text {
+      font-size: 16px;
+      font-weight: 700;
+      flex: 1;
+    }
+
+    .bill-due {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .bill-row.paid .bill-due {
+      color: var(--green);
+    }
+
+    /* v3: Energy week row in History */
+    .energy-week {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0 0 10px;
+    }
+
+    .energy-week-chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .energy-week-chip strong {
+      color: var(--green);
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-top">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">D</div>
+        <div>
+          <h1>Daily Desk</h1>
+          <span class="offline-badge">On-Device Only &bull; Offline Ready</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn btn-primary btn-sm" id="btn-copy-top">Copy Day Summary</button>
+        <button type="button" class="btn btn-outline btn-sm" id="btn-dark-toggle" aria-label="Toggle dark mode">Dark</button>
+      </div>
+    </div>
+    <div class="date-bar">
+      <button type="button" class="btn btn-outline btn-sm" id="btn-prev-day">&larr; Prev</button>
+      <div class="date-label" id="current-date-label">Today</div>
+      <button type="button" class="btn btn-outline btn-sm" id="btn-today">Today</button>
+      <button type="button" class="btn btn-outline btn-sm" id="btn-next-day">Next &rarr;</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- TAB 1: TODAY -->
+    <section id="tab-today" class="tab-panel active">
+      <!-- Verse of the Day -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Verse of the Day</h2>
+        </div>
+        <div class="verse-day">
+          <p class="verse-day-text" id="verse-day-text"></p>
+          <p class="verse-day-ref" id="verse-day-ref"></p>
+        </div>
+      </div>
+
+      <!-- Sleep & Wake -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Sleep &amp; Wake</h2>
+          <span class="stat-pill purple" id="sleep-duration-pill">Not logged</span>
+        </div>
+        <div class="btn-grid-2">
+          <div>
+            <label class="field-label">Bed Time</label>
+            <button type="button" class="time-pick-btn" id="sleep-bed-btn"><span>Tap to set</span><span>&#128338;</span></button>
+            <input type="hidden" id="sleep-bed" />
+          </div>
+          <div>
+            <label class="field-label">Wake Time</label>
+            <button type="button" class="time-pick-btn" id="sleep-wake-btn"><span>Tap to set</span><span>&#128338;</span></button>
+            <input type="hidden" id="sleep-wake" />
+          </div>
+        </div>
+        <div class="input-row">
+          <button type="button" class="btn btn-outline flex-1" id="btn-bed-now">Set Bed = Now</button>
+          <button type="button" class="btn btn-outline flex-1" id="btn-wake-now">Set Wake = Now</button>
+        </div>
+      </div>
+
+      <!-- Water Intake -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Water Intake</h2>
+          <span class="stat-pill blue" id="water-total-pill">0 oz</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="water-progress" style="width: 0%;"></div>
+        </div>
+        <div class="btn-grid">
+          <button type="button" class="btn btn-primary" data-water="8">+8 oz</button>
+          <button type="button" class="btn btn-primary" data-water="12">+12 oz</button>
+          <button type="button" class="btn btn-primary" data-water="24">+24 oz (1/2)</button>
+          <button type="button" class="btn btn-primary" data-water="36">+36 oz (3/4)</button>
+          <button type="button" class="btn btn-primary" data-water="48">+48 oz (Full)</button>
+        </div>
+        <div class="input-row">
+          <input type="number" id="water-custom" class="flex-1" min="0.1" max="200" step="any" placeholder="Custom oz (e.g. 16.9)" inputmode="decimal" />
+          <button type="button" class="btn btn-outline" id="btn-water-add">Add oz</button>
+        </div>
+        <div class="log-list" id="water-list"></div>
+      </div>
+
+      <!-- Urination Output -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Urination Output</h2>
+          <span class="stat-pill amber" id="pee-total-pill">0 oz out</span>
+        </div>
+        <label class="field-label">1. Pick Color</label>
+        <div class="color-grid" id="pee-color-grid">
+          <button type="button" class="color-btn" data-pee-color="Clear">
+            <span class="swatch swatch-clear"></span>Clear
+          </button>
+          <button type="button" class="color-btn selected" data-pee-color="Light">
+            <span class="swatch swatch-light"></span>Light
+          </button>
+          <button type="button" class="color-btn" data-pee-color="Medium">
+            <span class="swatch swatch-medium"></span>Medium
+          </button>
+          <button type="button" class="color-btn" data-pee-color="Dark">
+            <span class="swatch swatch-dark"></span>Dark
+          </button>
+        </div>
+        <label class="field-label">2. Tap Ounces</label>
+        <div class="btn-grid">
+          <button type="button" class="btn btn-amber" data-pee-oz="4">+4 oz</button>
+          <button type="button" class="btn btn-amber" data-pee-oz="6">+6 oz</button>
+          <button type="button" class="btn btn-amber" data-pee-oz="8">+8 oz</button>
+          <button type="button" class="btn btn-amber" data-pee-oz="12">+12 oz</button>
+          <button type="button" class="btn btn-amber" data-pee-oz="16">+16 oz</button>
+        </div>
+        <div class="input-row">
+          <input type="number" id="pee-custom" class="flex-1" min="0.1" max="100" step="any" placeholder="Custom oz (e.g. 13.6)" inputmode="decimal" />
+          <button type="button" class="btn btn-outline" id="btn-pee-add">Log Pee</button>
+        </div>
+        <div class="in-out-banner" id="in-out-banner">
+          <span>Water In: 0 oz</span>
+          <span>Pee Out: 0 oz</span>
+          <span>Net: 0 oz</span>
+        </div>
+        <div class="log-list" id="pee-list"></div>
+      </div>
+
+      <!-- Coffee Shots -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Coffee Shots</h2>
+          <span class="stat-pill amber" id="coffee-total-pill">0 shots (0 mg)</span>
+        </div>
+        <p class="muted-note" style="margin: 0 0 10px;">1 shot = 1 teaspoon instant coffee (~100 mg caffeine)</p>
+        <div class="btn-grid-2">
+          <button type="button" class="btn btn-amber" id="btn-coffee-1">+1 Shot (Now)</button>
+          <button type="button" class="btn btn-outline" id="btn-coffee-3">+3 Shots (Now)</button>
+        </div>
+        <div class="input-row" style="margin-top: 10px;">
+          <div class="flex-1">
+            <label class="field-label">Or Log Earlier Time</label>
+            <button type="button" class="time-pick-btn" id="coffee-time-btn"><span>Now</span><span>&#128338;</span></button>
+            <input type="hidden" id="coffee-custom-time" />
+          </div>
+          <div class="flex-1">
+            <label class="field-label" for="coffee-custom-shots">Shots</label>
+            <input type="number" id="coffee-custom-shots" min="1" max="20" value="3" inputmode="numeric" />
+          </div>
+        </div>
+        <div class="input-row">
+          <input type="text" id="coffee-custom-note" class="flex-2" placeholder="Note (e.g. 14-oz bottle)" />
+          <button type="button" class="btn btn-outline flex-1" id="btn-coffee-custom">Log Coffee</button>
+        </div>
+        <div class="input-row">
+          <input type="number" id="coffee-custom-cal" class="flex-1" min="0" placeholder="Calories (optional)" inputmode="numeric" />
+          <span class="muted-note flex-2">Sugar + milk in a 14-oz bottle is about 80 cal. Plain shots are 0. Coffee calories count toward the food total.</span>
+        </div>
+        <div class="log-list" id="coffee-list"></div>
+      </div>
+
+      <!-- Prayer & Bible Reading -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Prayer &amp; Bible Reading</h2>
+          <span class="stat-pill green" id="faith-streak-pill">0/3 today</span>
+        </div>
+        <label class="check-item" id="lbl-morning-prayer">
+          <input type="checkbox" id="chk-morning-prayer" />
+          <span class="check-text">Morning Prayer</span>
+        </label>
+        <label class="check-item" id="lbl-bible-reading">
+          <input type="checkbox" id="chk-bible-reading" />
+          <span class="check-text">Bible Reading</span>
+        </label>
+        <label class="check-item" id="lbl-evening-prayer">
+          <input type="checkbox" id="chk-evening-prayer" />
+          <span class="check-text">Evening Prayer</span>
+        </label>
+        <button type="button" class="btn btn-outline btn-sm" id="btn-toggle-verses" style="width: 100%; margin-top: 4px;">Show Daily KJV Verses</button>
+        <div class="verse-box" id="kjv-verses" style="display: none;">
+          <p style="margin: 0 0 8px;"><strong>Job 13:15 (KJV):</strong> Though he slay me, yet will I trust in him: but I will maintain mine own ways before him.</p>
+          <p style="margin: 0 0 8px;"><strong>Joshua 1:5 (KJV):</strong> There shall not any man be able to stand before thee all the days of thy life: as I was with Moses, so I will be with thee: I will not fail thee, nor forsake thee.</p>
+          <p style="margin: 0;"><strong>Galatians 2:20 (KJV):</strong> I am crucified with Christ: nevertheless I live; yet not I, but Christ liveth in me: and the life which I now live in the flesh I live by the faith of the Son of God, who loved me, and gave himself for me.</p>
+        </div>
+      </div>
+
+      <!-- Mood & Energy Check-in -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">How&rsquo;s Your Energy Today?</h2>
+          <span class="stat-pill green" id="energy-pill">Not logged</span>
+        </div>
+        <p class="muted-note" style="margin: 0;">Tap a number &mdash; 1 is dragging, 5 is strong. Tap again to change it.</p>
+        <div class="energy-grid" id="energy-grid">
+          <button type="button" class="energy-btn" data-energy="1">1</button>
+          <button type="button" class="energy-btn" data-energy="2">2</button>
+          <button type="button" class="energy-btn" data-energy="3">3</button>
+          <button type="button" class="energy-btn" data-energy="4">4</button>
+          <button type="button" class="energy-btn" data-energy="5">5</button>
+        </div>
+        <p class="muted-note" style="margin: 0;">1 = dragging &nbsp;&bull;&nbsp; 5 = strong</p>
+      </div>
+
+      <!-- Walking Tracker -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Walking Tracker</h2>
+          <span class="stat-pill green" id="walk-total-pill">0 min &bull; 0.0 mi</span>
+        </div>
+        <div class="big-timer" id="walk-timer-display">00:00</div>
+        <div class="btn-grid-2">
+          <button type="button" class="btn btn-green" id="btn-walk-start">Start Walk</button>
+          <button type="button" class="btn btn-red" id="btn-walk-stop" disabled>Stop &amp; Save</button>
+        </div>
+        <div class="input-row">
+          <div class="flex-1">
+            <label class="field-label" for="walk-dist">Distance (miles)</label>
+            <input type="number" id="walk-dist" step="0.1" min="0" placeholder="e.g. 1.3" inputmode="decimal" />
+          </div>
+          <div class="flex-1">
+            <label class="field-label" for="walk-mins">Manual Mins</label>
+            <input type="number" id="walk-mins" min="1" placeholder="e.g. 35" inputmode="numeric" />
+          </div>
+        </div>
+        <div class="input-row">
+          <button type="button" class="btn btn-outline btn-sm" id="btn-walk-preset">Use 1.3 mi</button>
+          <button type="button" class="btn btn-outline flex-1" id="btn-walk-manual">Log Manual Walk</button>
+        </div>
+        <div class="log-list" id="walk-list"></div>
+      </div>
+
+      <!-- God Provided -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">God Provided</h2>
+          <span class="stat-pill green" id="provided-count-pill">0 today</span>
+        </div>
+        <p class="muted-note" style="margin: 0 0 10px;">What did God bring through today? A box, a bill covered, a warm night &mdash; write it down so you remember.</p>
+        <div class="input-row">
+          <input type="text" id="provided-input" class="flex-2" placeholder="What did God bring through today?" />
+          <button type="button" class="btn btn-outline mic-btn" data-mic-target="provided-input" aria-label="Speak instead of typing" title="Speak instead of typing">&#127908;</button>
+          <button type="button" class="btn btn-green" id="btn-provided-add">Add</button>
+        </div>
+        <p class="muted-note" style="margin: 6px 0 0;">&#127908; Tap the mic to speak instead of typing. Voice needs an internet connection &mdash; the rest of the app still works offline.</p>
+        <div class="log-list" id="provided-list"></div>
+      </div>
+
+      <!-- Money & Bills -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Money &amp; Bills</h2>
+        </div>
+        <p class="muted-note" style="margin: 0 0 10px;">Days left count down on their own. Check one off when it&rsquo;s paid.</p>
+        <div id="bill-list"></div>
+      </div>
+
+      <!-- Bottom Copy Summary CTA -->
+      <div class="card" style="text-align: center;">
+        <button type="button" class="btn btn-primary" id="btn-copy-bottom" style="width: 100%; font-size: 18px; min-height: 54px;">
+          Copy Day Summary (for Muse / Gemini / ChatGPT)
+        </button>
+      </div>
+    </section>
+
+    <!-- TAB 2: FOOD & SESSIONS -->
+    <section id="tab-log" class="tab-panel">
+      <!-- Food & Calories -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Food &amp; Calories</h2>
+          <span class="stat-pill green" id="food-total-pill">0 cal</span>
+        </div>
+        <p class="muted-note" id="food-coffee-note" style="display: none; margin: 0 0 10px;"></p>
+        <div class="input-row">
+          <input type="text" id="food-name" class="flex-2" placeholder="Food or meal (e.g. 2 eggs &amp; toast)" />
+          <button type="button" class="btn btn-outline mic-btn" data-mic-target="food-name" aria-label="Speak instead of typing" title="Speak instead of typing">&#127908;</button>
+          <input type="number" id="food-cal" class="flex-1" min="0" placeholder="Calories" inputmode="numeric" />
+        </div>
+        <div class="input-row">
+          <select id="food-meal" class="flex-1">
+            <option value="Meal">Meal</option>
+            <option value="Breakfast">Breakfast</option>
+            <option value="Lunch">Lunch</option>
+            <option value="Dinner">Dinner</option>
+            <option value="Snack">Snack</option>
+          </select>
+          <button type="button" class="btn btn-green flex-1" id="btn-food-add">Log Food</button>
+        </div>
+        <div id="food-recent-wrap" style="margin-top: 10px; display: none;">
+          <label class="field-label">Quick Tap Recent Foods</label>
+          <div class="chip-row" id="food-recent-chips"></div>
+        </div>
+        <div class="log-list" id="food-list"></div>
+      </div>
+
+      <!-- Masturbation & Edging Sessions -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Masturbation &amp; Edging Sessions</h2>
+          <span class="stat-pill purple" id="session-total-pill">0 today</span>
+        </div>
+        <div class="btn-grid-2">
+          <div>
+            <label class="field-label" for="session-date">Date</label>
+            <input type="date" id="session-date" />
+          </div>
+          <div>
+            <label class="field-label">Time</label>
+            <button type="button" class="time-pick-btn" id="session-time-btn"><span>Tap to set</span><span>&#128338;</span></button>
+            <input type="hidden" id="session-time" />
+          </div>
+        </div>
+        <div style="margin-top: 8px;">
+          <label class="field-label" for="session-notes">Notes (peaks, pauses, feelings, release)</label>
+          <textarea id="session-notes" placeholder="Optional session notes..."></textarea>
+        </div>
+        <div class="input-row">
+          <button type="button" class="btn btn-outline mic-btn" data-mic-target="session-notes" aria-label="Speak session notes" title="Speak instead of typing">&#127908;</button>
+          <button type="button" class="btn btn-outline" id="btn-session-now">Set Now</button>
+          <button type="button" class="btn btn-primary flex-1" id="btn-session-add">Log Session</button>
+        </div>
+        <div class="log-list" id="session-list"></div>
+      </div>
+    </section>
+
+    <!-- TAB 3: TASKS & TIMER -->
+    <section id="tab-tools" class="tab-panel">
+      <!-- Task Reminder List -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Task Reminder List</h2>
+          <span class="stat-pill blue" id="task-count-pill">0 open</span>
+        </div>
+        <div class="input-row">
+          <input type="text" id="task-input" class="flex-2" placeholder="Add a reminder or task..." />
+          <button type="button" class="btn btn-outline mic-btn" data-mic-target="task-input" aria-label="Speak instead of typing" title="Speak instead of typing">&#127908;</button>
+          <input type="text" id="task-due" class="flex-1" placeholder="Time like 2:30 PM (optional)" />
+        </div>
+        <div class="input-row">
+          <button type="button" class="btn btn-primary" id="btn-task-add" style="width: 100%;">Add Task</button>
+        </div>
+        <div class="input-row">
+          <button type="button" class="btn btn-outline flex-1" id="btn-loud-on">Enable Loud Reminders</button>
+          <button type="button" class="btn btn-outline flex-1" id="btn-test-sound">Test Sound</button>
+        </div>
+        <p class="muted-note">A task with a time (like 2:30 PM) will sound a loud chime, buzz, and pop a big red banner when its time comes, once a day until you check it off or delete it.</p>
+        <div class="log-list" id="task-list"></div>
+      </div>
+
+      <!-- Simple Timer -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Simple Timer</h2>
+          <span class="stat-pill" id="timer-mode-pill">Countdown</span>
+        </div>
+        <div class="btn-grid">
+          <button type="button" class="btn btn-outline btn-sm" data-timer-min="5">5 min</button>
+          <button type="button" class="btn btn-outline btn-sm" data-timer-min="10">10 min</button>
+          <button type="button" class="btn btn-outline btn-sm" data-timer-min="15">15 min</button>
+          <button type="button" class="btn btn-outline btn-sm" data-timer-min="30">30 min</button>
+          <button type="button" class="btn btn-outline btn-sm" data-timer-min="35">35 min</button>
+        </div>
+        <div class="input-row">
+          <input type="number" id="timer-custom-min" class="flex-1" min="1" max="360" placeholder="Custom minutes" inputmode="numeric" />
+          <button type="button" class="btn btn-outline" id="btn-timer-set">Set</button>
+          <button type="button" class="btn btn-outline" id="btn-timer-stopwatch">Stopwatch</button>
+        </div>
+        <div class="big-timer" id="simple-timer-display">10:00</div>
+        <div class="btn-grid-2">
+          <button type="button" class="btn btn-green" id="btn-timer-start">Start</button>
+          <button type="button" class="btn btn-outline" id="btn-timer-reset">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: HISTORY & BACKUP -->
+    <section id="tab-history" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Saved Days History</h2>
+          <span class="stat-pill green" id="faith-total-streak">Faith Streak: 0 days</span>
+        </div>
+        <p class="muted-note" style="margin: 0 0 10px;">Tap any day to view or edit its entries.</p>
+        <p class="muted-note" style="margin: 0 0 6px;"><strong>Energy &mdash; last 7 days</strong></p>
+        <div class="energy-week" id="energy-week"></div>
+        <div class="log-list" id="history-list"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Device Backup &amp; Privacy</h2>
+        </div>
+        <p class="muted-note" style="margin: 0 0 12px;">
+          All your records stay 100% on this device in browser localStorage. Nothing is uploaded or sent anywhere.
+        </p>
+        <div class="btn-grid-2">
+          <button type="button" class="btn btn-primary" id="btn-export-json">Export Backup (.json)</button>
+          <label class="btn btn-outline" for="import-json-file" style="margin: 0;">Import Backup</label>
+          <input type="file" id="import-json-file" accept=".json,application/json" style="display: none;" />
+        </div>
+        <div class="input-row" style="margin-top: 12px;">
+          <button type="button" class="btn btn-outline flex-1" id="btn-clear-day">Clear Current Day</button>
+          <button type="button" class="btn btn-red flex-1" id="btn-clear-all">Erase All Data</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button type="button" class="nav-btn active" data-tab="today">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Today</span>
+    </button>
+    <button type="button" class="nav-btn" data-tab="log">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      <span>Food &amp; Log</span>
+    </button>
+    <button type="button" class="nav-btn" data-tab="tools">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Tasks &amp; Timer</span>
+    </button>
+    <button type="button" class="nav-btn" data-tab="history">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/></svg>
+      <span>History</span>
+    </button>
+  </nav>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+  <div id="loud-alert" class="loud-alert" style="display: none;">
+    <div class="loud-alert-title" id="loud-alert-title">Reminder!</div>
+    <div class="loud-alert-text" id="loud-alert-text"></div>
+    <button type="button" class="btn btn-primary" id="loud-alert-dismiss" style="width: 100%; margin-top: 12px;">OK, got it</button>
+  </div>
+
+  <!-- Summary Modal -->
+  <div class="modal-backdrop" id="summary-modal">
+    <div class="modal-box">
+      <h2>Day Summary (Plain Text)</h2>
+      <p class="muted-note" style="margin: 0 0 10px;">Ready to paste into Muse, Gemini, or ChatGPT.</p>
+      <pre class="summary-pre" id="summary-text"></pre>
+      <div class="input-row" style="margin-top: 12px;">
+        <button type="button" class="btn btn-primary flex-1" id="btn-modal-copy">Copy Text</button>
+        <button type="button" class="btn btn-outline" id="btn-modal-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Time Picker Modal -->
+  <div class="modal-backdrop" id="time-modal">
+    <div class="modal-box">
+      <div class="card-header" style="margin-bottom: 6px;">
+        <h2 id="tp-title" style="margin: 0;">Set Time</h2>
+        <span class="stat-pill blue" id="tp-preview">12:00 PM</span>
+      </div>
+      <div class="btn-grid-2" style="margin-bottom: 10px;">
+        <button type="button" class="tp-cell" id="tp-am">AM</button>
+        <button type="button" class="tp-cell" id="tp-pm">PM</button>
+      </div>
+      <label class="field-label">Hour</label>
+      <div class="tp-grid-hours" id="tp-hours"></div>
+      <label class="field-label">Minute</label>
+      <div class="tp-grid-mins" id="tp-mins"></div>
+      <div class="input-row" style="margin-top: 6px;">
+        <button type="button" class="btn btn-outline btn-sm flex-1" id="tp-m-minus">-1 min</button>
+        <button type="button" class="btn btn-outline btn-sm flex-1" id="tp-m-plus">+1 min</button>
+      </div>
+      <div class="input-row" style="margin-top: 12px;">
+        <button type="button" class="btn btn-outline" id="tp-clear">Clear</button>
+        <button type="button" class="btn btn-outline" id="tp-cancel">Cancel</button>
+        <button type="button" class="btn btn-green flex-1" id="tp-save">Save Time</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div class="modal-backdrop" id="confirm-modal">
+    <div class="modal-box">
+      <h2 id="confirm-title">Confirm Action</h2>
+      <p id="confirm-message" style="margin: 0 0 14px;"></p>
+      <div class="btn-grid-2">
+        <button type="button" class="btn btn-outline" id="btn-confirm-cancel">Cancel</button>
+        <button type="button" class="btn btn-red" id="btn-confirm-ok">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var STORAGE_KEY = "daily_desk_v1";
+      var memoryFallback = null;
+      var selectedPeeColor = "Light";
+      var walkInterval = null;
+      var simpleTimerInterval = null;
+      var pendingConfirmFn = null;
+
+      // v3: Verse of the Day - rotates daily by day-of-year modulo 5.
+      // These are Tyson's own three daily scriptures plus Zechariah 4:6 and
+      // Psalm 73:26. Quoted exactly as written (KJV wording).
+      var VERSES_OF_DAY = [
+        { ref: "Job 13:15 (KJV)", text: "Though he slay me, yet will I trust in him." },
+        { ref: "Joshua 1:5 (KJV)", text: "I will be with thee: I will not fail thee, nor forsake thee." },
+        { ref: "Galatians 2:20 (KJV)", text: "I am crucified with Christ: nevertheless I live; yet not I, but Christ liveth in me." },
+        { ref: "Zechariah 4:6 (KJV)", text: "Not by might, nor by power, but by my spirit, saith the LORD of hosts." },
+        { ref: "Psalm 73:26 (KJV)", text: "My flesh and my heart faileth: but God is the strength of my heart, and my portion for ever." }
+      ];
+
+      // v3: Money & Bills countdowns. Due dates are fixed; days-left is
+      // computed live from the current date. Land tax amount is unknown -
+      // never invent one. Phone bill shown is the NEXT one (~Dec 26); the
+      // Nov 26 bill is already covered.
+      var BILLS = [
+        { key: "trec", name: "TREC Electric Bill", detail: "$153.09", dueLabel: "Dec 7, 2026", due: new Date(2026, 11, 7) },
+        { key: "landTax", name: "Land Tax", detail: "amount unknown - praying about it", dueLabel: "~Jan 1, 2027", due: new Date(2027, 0, 1) },
+        { key: "phone", name: "Total Wireless Phone", detail: "$35", dueLabel: "~Dec 26, 2026", due: new Date(2026, 11, 26) }
+      ];
+
+      function round1(n) {
+        return Math.round((Number(n) || 0) * 10) / 10;
+      }
+
+      function pad(n) {
+        return n < 10 ? "0" + n : String(n);
+      }
+
+      function localDateStr(d) {
+        var dt = d || new Date();
+        return dt.getFullYear() + "-" + pad(dt.getMonth() + 1) + "-" + pad(dt.getDate());
+      }
+
+      function nowTimeStr() {
+        var dt = new Date();
+        return pad(dt.getHours()) + ":" + pad(dt.getMinutes());
+      }
+
+      function formatTime12(hhmm) {
+        if (!hhmm) return "";
+        var parts = hhmm.split(":");
+        var h = parseInt(parts[0], 10);
+        var m = parts[1] || "00";
+        if (isNaN(h)) return hhmm;
+        var ampm = h >= 12 ? "PM" : "AM";
+        var h12 = h % 12 || 12;
+        return h12 + ":" + m + " " + ampm;
+      }
+
+      function formatDisplayDate(dateStr) {
+        var today = localDateStr();
+        if (dateStr === today) return "Today (" + dateStr + ")";
+        var parts = dateStr.split("-");
+        var dt = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        return days[dt.getDay()] + ", " + months[dt.getMonth()] + " " + dt.getDate() + ", " + dt.getFullYear();
+      }
+
+      function emptyDay() {
+        return {
+          sleepBed: "",
+          sleepWake: "",
+          water: [],
+          pee: [],
+          coffee: [],
+          faith: { morning: false, bible: false, evening: false },
+          walks: [],
+          food: [],
+          sessions: [],
+          provided: [],
+          energy: null
+        };
+      }
+
+      function defaultState() {
+        return {
+          dark: false,
+          currentDate: localDateStr(),
+          days: {},
+          tasks: [],
+          recentFoods: [],
+          bills: { trec: false, landTax: false, phone: false },
+          walkActiveStart: null,
+          timer: {
+            mode: "countdown",
+            durationSec: 600,
+            remainingSec: 600,
+            elapsedSec: 0,
+            running: false,
+            lastTick: null
+          }
+        };
+      }
+
+      function loadState() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            var base = defaultState();
+            return Object.assign(base, parsed, {
+              timer: Object.assign(base.timer, parsed.timer || {})
+            });
+          }
+        } catch (e) {
+          if (memoryFallback) return memoryFallback;
+        }
+        return defaultState();
+      }
+
+      var state = loadState();
+      if (!state.currentDate) state.currentDate = localDateStr();
+
+      // One-time fix: coffee entries saved before calories existed have no
+      // cal field. A drink whose note mentions sugar (his usual 14-oz bottle:
+      // 3 tsp sugar + 1 tbsp powdered milk) is about 80 cal. Fill it in once
+      // so past food totals read right. Plain shots stay 0.
+      (function migrateCoffeeCalories() {
+        var changed = false;
+        Object.keys(state.days || {}).forEach(function (k) {
+          var d = state.days[k];
+          (d.coffee || []).forEach(function (c) {
+            if (c.cal === undefined || c.cal === null) {
+              c.cal = (/sugar/i.test(c.note || "")) ? 80 : 0;
+              changed = true;
+            }
+          });
+        });
+        if (changed) saveState();
+      })();
+
+      function saveState() {
+        memoryFallback = state;
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+          // Ignore storage quota / sandbox restrictions; memoryFallback keeps working
+        }
+      }
+
+      function getDay(dateStr) {
+        var key = dateStr || state.currentDate;
+        if (!state.days[key]) {
+          state.days[key] = emptyDay();
+        }
+        var d = state.days[key];
+        if (!d.faith) d.faith = { morning: false, bible: false, evening: false };
+        if (!d.water) d.water = [];
+        if (!d.pee) d.pee = [];
+        if (!d.coffee) d.coffee = [];
+        if (!d.walks) d.walks = [];
+        if (!d.food) d.food = [];
+        if (!d.sessions) d.sessions = [];
+        if (!d.provided) d.provided = [];
+        if (d.energy === undefined) d.energy = null;
+        return d;
+      }
+
+      function showToast(msg) {
+        var el = document.getElementById("toast");
+        el.textContent = msg;
+        el.style.display = "block";
+        clearTimeout(el._t);
+        el._t = setTimeout(function () {
+          el.style.display = "none";
+        }, 2400);
+      }
+
+      function openConfirm(title, message, onConfirm) {
+        document.getElementById("confirm-title").textContent = title;
+        document.getElementById("confirm-message").textContent = message;
+        pendingConfirmFn = onConfirm;
+        document.getElementById("confirm-modal").classList.add("open");
+      }
+
+      function closeConfirm() {
+        pendingConfirmFn = null;
+        document.getElementById("confirm-modal").classList.remove("open");
+      }
+
+      function calcSleepMinutes(bed, wake) {
+        if (!bed || !wake) return null;
+        var b = bed.split(":");
+        var w = wake.split(":");
+        var bm = parseInt(b[0], 10) * 60 + parseInt(b[1], 10);
+        var wm = parseInt(w[0], 10) * 60 + parseInt(w[1], 10);
+        if (isNaN(bm) || isNaN(wm)) return null;
+        var diff = wm - bm;
+        if (diff <= 0) diff += 24 * 60;
+        return diff;
+      }
+
+      function formatDurationMins(mins) {
+        if (mins === null || isNaN(mins)) return "Not logged";
+        var h = Math.floor(mins / 60);
+        var m = mins % 60;
+        return h + "h " + m + "m";
+      }
+
+      function escHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function playChime() {
+        try {
+          var AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          var ctx = new AudioCtx();
+          var notes = [523.25, 659.25, 783.99];
+          notes.forEach(function (freq, idx) {
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.type = "sine";
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.001, ctx.currentTime + idx * 0.16);
+            gain.gain.exponentialRampToValueAtTime(0.22, ctx.currentTime + idx * 0.16 + 0.03);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.16 + 0.35);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + idx * 0.16);
+            osc.stop(ctx.currentTime + idx * 0.16 + 0.38);
+          });
+        } catch (e) {
+          // Ignore audio errors
+        }
+      }
+
+      // Loud alerts: chime 3 times, buzz, big banner, and a system
+      // notification when allowed. A silent in-page note is not a reminder.
+      function playLoudChime() {
+        var i;
+        for (i = 0; i < 3; i++) {
+          setTimeout(playChime, i * 700);
+        }
+        try {
+          if (navigator.vibrate) navigator.vibrate([600, 200, 600, 200, 900]);
+        } catch (e) {}
+      }
+
+      function fireLoudAlert(title, message) {
+        var box = document.getElementById("loud-alert");
+        document.getElementById("loud-alert-title").textContent = title;
+        document.getElementById("loud-alert-text").textContent = message;
+        box.style.display = "block";
+        playLoudChime();
+        try {
+          if (window.Notification && Notification.permission === "granted") {
+            new Notification(title, { body: message });
+          }
+        } catch (e) {}
+      }
+
+      // Read a time like "2:30 PM" out of a task's due field. Returns minutes
+      // after midnight, or null when there is no time in the text.
+      function parseDueTime(due) {
+        if (!due) return null;
+        var m = due.match(/(\d{1,2}):(\d{2})\s*([AaPp])\.?\s*[Mm]\.?/);
+        if (!m) return null;
+        var h = parseInt(m[1], 10);
+        var min = parseInt(m[2], 10);
+        var ap = m[3].toUpperCase();
+        if (h < 1 || h > 12 || min > 59) return null;
+        if (ap === "P" && h !== 12) h += 12;
+        if (ap === "A" && h === 12) h = 0;
+        return h * 60 + min;
+      }
+
+      // Check open tasks every 30 seconds. A task whose time has come fires
+      // the loud alert once that day, then waits for tomorrow until it is
+      // checked off or deleted.
+      function checkTaskReminders() {
+        var now = new Date();
+        var todayStr = localDateStr(now);
+        var nowMins = now.getHours() * 60 + now.getMinutes();
+        var changed = false;
+        var fired = false;
+        state.tasks.forEach(function (t) {
+          if (fired || t.done) return;
+          var dueMins = parseDueTime(t.due);
+          if (dueMins === null) return;
+          if (nowMins >= dueMins && t.alertedDate !== todayStr) {
+            t.alertedDate = todayStr;
+            changed = true;
+            fired = true;
+            fireLoudAlert("Task Reminder", t.text + " - due " + t.due);
+          }
+        });
+        if (changed) saveState();
+      }
+
+      function renderAll() {
+        document.body.classList.toggle("dark", !!state.dark);
+        document.getElementById("btn-dark-toggle").textContent = state.dark ? "Light" : "Dark";
+        document.getElementById("current-date-label").textContent = formatDisplayDate(state.currentDate);
+
+        var day = getDay();
+
+        // Sleep
+        document.getElementById("sleep-bed").value = day.sleepBed || "";
+        document.getElementById("sleep-wake").value = day.sleepWake || "";
+        document.getElementById("sleep-bed-btn").firstElementChild.textContent = day.sleepBed ? formatTime12(day.sleepBed) : "Tap to set";
+        document.getElementById("sleep-wake-btn").firstElementChild.textContent = day.sleepWake ? formatTime12(day.sleepWake) : "Tap to set";
+        var sleepMins = calcSleepMinutes(day.sleepBed, day.sleepWake);
+        document.getElementById("sleep-duration-pill").textContent =
+          sleepMins !== null ? formatDurationMins(sleepMins) : "Not logged";
+
+        // Water
+        var waterOz = round1(day.water.reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0));
+        document.getElementById("water-total-pill").textContent = waterOz + " oz";
+        var pct = Math.min(100, Math.round((waterOz / 48) * 100));
+        document.getElementById("water-progress").style.width = pct + "%";
+
+        var waterList = document.getElementById("water-list");
+        waterList.innerHTML = day.water.map(function (item) {
+          return '<div class="log-row">' +
+            '<div class="log-row-main"><div class="log-row-title">+' + item.oz + ' oz water</div>' +
+            '<div class="log-row-sub">' + formatTime12(item.time) + '</div></div>' +
+            '<button type="button" class="del-btn" data-del-type="water" data-del-id="' + item.id + '" aria-label="Delete water entry">&times;</button>' +
+            '</div>';
+        }).join("");
+
+        // Pee
+        var peeOz = round1(day.pee.reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0));
+        document.getElementById("pee-total-pill").textContent = peeOz + " oz out";
+        var net = round1(waterOz - peeOz);
+        document.getElementById("in-out-banner").innerHTML =
+          '<span>Water In: ' + waterOz + ' oz</span>' +
+          '<span>Pee Out: ' + peeOz + ' oz</span>' +
+          '<span>Net: ' + (net >= 0 ? "+" : "") + net + ' oz</span>';
+
+        var peeList = document.getElementById("pee-list");
+        peeList.innerHTML = day.pee.map(function (item) {
+          return '<div class="log-row">' +
+            '<div class="log-row-main"><div class="log-row-title">' + item.oz + ' oz &bull; ' + escHtml(item.color) + '</div>' +
+            '<div class="log-row-sub">' + formatTime12(item.time) + '</div></div>' +
+            '<button type="button" class="del-btn" data-del-type="pee" data-del-id="' + item.id + '" aria-label="Delete pee entry">&times;</button>' +
+            '</div>';
+        }).join("");
+
+        // Coffee
+        var shots = day.coffee.reduce(function (s, x) { return s + (Number(x.shots) || 0); }, 0);
+        document.getElementById("coffee-total-pill").textContent = shots + " shot" + (shots === 1 ? "" : "s") + " (" + (shots * 100) + " mg)";
+        document.getElementById("coffee-list").innerHTML = day.coffee.map(function (item) {
+          return '<div class="log-row">' +
+            '<div class="log-row-main"><div class="log-row-title">+' + item.shots + ' shot' + (item.shots === 1 ? "" : "s") + ((Number(item.cal) || 0) > 0 ? " (" + Number(item.cal) + " cal)" : "") + (item.note ? " (" + escHtml(item.note) + ")" : "") + '</div>' +
+            '<div class="log-row-sub">' + formatTime12(item.time) + '</div></div>' +
+            '<button type="button" class="btn btn-outline btn-sm" data-edit-coffee-time="' + item.id + '">Time</button>' +
+            '<button type="button" class="del-btn" data-del-type="coffee" data-del-id="' + item.id + '" aria-label="Delete coffee entry">&times;</button>' +
+            '</div>';
+        }).join("");
+
+        // Faith
+        var chkM = document.getElementById("chk-morning-prayer");
+        var chkB = document.getElementById("chk-bible-reading");
+        var chkE = document.getElementById("chk-evening-prayer");
+        chkM.checked = !!day.faith.morning;
+        chkB.checked = !!day.faith.bible;
+        chkE.checked = !!day.faith.evening;
+        document.getElementById("lbl-morning-prayer").classList.toggle("done", chkM.checked);
+        document.getElementById("lbl-bible-reading").classList.toggle("done", chkB.checked);
+        document.getElementById("lbl-evening-prayer").classList.toggle("done", chkE.checked);
+        var faithDone = (chkM.checked ? 1 : 0) + (chkB.checked ? 1 : 0) + (chkE.checked ? 1 : 0);
+        document.getElementById("faith-streak-pill").textContent = faithDone + "/3 today";
+
+        // Verse of the Day (v3) - rotates daily by day-of-year modulo 5
+        var doy = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+        var verseToday = VERSES_OF_DAY[doy % VERSES_OF_DAY.length];
+        document.getElementById("verse-day-text").textContent = "\u201C" + verseToday.text + "\u201D";
+        document.getElementById("verse-day-ref").textContent = verseToday.ref;
+
+        // Energy check-in (v3) - one value per day, tappable to change
+        var energyVal = day.energy;
+        document.getElementById("energy-pill").textContent = energyVal ? ("Energy: " + energyVal + "/5") : "Not logged";
+        document.querySelectorAll("[data-energy]").forEach(function (b) {
+          b.classList.toggle("selected", energyVal !== null && parseInt(b.getAttribute("data-energy"), 10) === energyVal);
+        });
+
+        // God Provided (v3)
+        document.getElementById("provided-count-pill").textContent = day.provided.length + " today";
+        document.getElementById("provided-list").innerHTML = day.provided.map(function (item) {
+          return '<div class="log-row">' +
+            '<div class="log-row-main"><div class="log-row-title">' + escHtml(item.text) + '</div>' +
+            '<div class="log-row-sub">' + formatTime12(item.time) + '</div></div>' +
+            '<button type="button" class="del-btn" data-del-type="provided" data-del-id="' + item.id + '" aria-label="Delete provision entry">&times;</button>' +
+            '</div>';
+        }).join("");
+
+        // Walks
+        var walkMins = day.walks.reduce(function (s, x) { return s + (Number(x.mins) || 0); }, 0);
+        var walkDist = day.walks.reduce(function (s, x) { return s + (Number(x.dist) || 0); }, 0);
+        document.getElementById("walk-total-pill").textContent = walkMins + " min \u2022 " + walkDist.toFixed(1) + " mi";
+        document.getElementById("walk-list").innerHTML = day.walks.map(function (item) {
+          return '<div class="log-row">' +
+            '<div class="log-row-main"><div class="log-row-title">' + item.mins + ' min \u2022 ' + Number(item.dist || 0).toFixed(1) + ' mi</div>' +
+            '<div class="log-row-sub">' + formatTime12(item.time) + '</div></div>' +
+            '<button type="button" class="del-btn" data-del-type="walks" data-del-id="' + item.id + '" aria-label="Delete walk entry">&times;</button>' +
+            '</div>';
+        }).join("");
+        updateWalkButtons();
+
+        // Food (coffee calories count too: sugar + milk in a drink)
+        var coffeeCal = day.coffee.reduce(function (s, x) { return s + (Number(x.cal) || 0); }, 0);
+        var totalCal = day.food.reduce(function (s, x) { return s + (Number(x.cal) || 0); }, 0) + coffeeCal;
+        document.getElementById("food-total-pill").textContent = totalCal + " cal";
+        var foodNote = document.getElementById("food-coffee-note");
+        if (foodNote) {
+          if (coffeeCal > 0) {
+            foodNote.style.display = "block";
+            foodNote.textContent = "Includes " + coffeeCal + " cal from coffee drinks (sugar + milk).";
+          } else {
+            foodNote.style.display = "none";
+          }
+        }
+        document.getElementById("food-list").innerHTML = day.food.map(function (item) {
+          return '<div class="log-row">' +
+            '<div class="log-row-main"><div class="log-row-title">' + escHtml(item.name) + ' - ' + item.cal + ' cal</div>' +
+            '<div class="log-row-sub">' + escHtml(item.meal || "Meal") + ' &bull; ' + formatTime12(item.time) + '</div></div>' +
+            '<button type="button" class="del-btn" data-del-type="food" data-del-id="' + item.id + '" aria-label="Delete food entry">&times;</button>' +
+            '</div>';
+        }).join("");
+
+        var recentWrap = document.getElementById("food-recent-wrap");
+        var recentChips = document.getElementById("food-recent-chips");
+        if (state.recentFoods && state.recentFoods.length > 0) {
+          recentWrap.style.display = "block";
+          recentChips.innerHTML = state.recentFoods.map(function (rf, i) {
+            return '<button type="button" class="chip-btn" data-recent-food="' + i + '">' + escHtml(rf.name) + ' (' + rf.cal + ')</button>';
+          }).join("");
+        } else {
+          recentWrap.style.display = "none";
+        }
+
+        // Sessions
+        document.getElementById("session-total-pill").textContent = day.sessions.length + " today";
+        if (!document.getElementById("session-date").value) {
+          document.getElementById("session-date").value = state.currentDate;
+        }
+        if (!document.getElementById("session-time").value) {
+          document.getElementById("session-time").value = nowTimeStr();
+        }
+        document.getElementById("session-time-btn").firstElementChild.textContent = formatTime12(document.getElementById("session-time").value);
+        document.getElementById("session-list").innerHTML = day.sessions.map(function (item) {
+          return '<div class="log-row">' +
+            '<div class="log-row-main"><div class="log-row-title">' + escHtml(item.date) + ' at ' + formatTime12(item.time) + '</div>' +
+            '<div class="log-row-sub">' + (item.notes ? escHtml(item.notes) : "No notes") + '</div></div>' +
+            '<button type="button" class="del-btn" data-del-type="sessions" data-del-id="' + item.id + '" aria-label="Delete session entry">&times;</button>' +
+            '</div>';
+        }).join("");
+
+        // Tasks
+        var openCount = state.tasks.filter(function (t) { return !t.done; }).length;
+        document.getElementById("task-count-pill").textContent = openCount + " open";
+        document.getElementById("task-list").innerHTML = state.tasks.length === 0
+          ? '<p class="muted-note">No tasks yet. Add one above.</p>'
+          : state.tasks.map(function (t) {
+              return '<div class="check-item ' + (t.done ? "done" : "") + '">' +
+                '<input type="checkbox" data-task-toggle="' + t.id + '" ' + (t.done ? "checked" : "") + ' />' +
+                '<div class="check-text">' + escHtml(t.text) + (t.due ? '<div class="log-row-sub">' + escHtml(t.due) + '</div>' : '') + '</div>' +
+                '<button type="button" class="del-btn" data-task-del="' + t.id + '" aria-label="Delete task">&times;</button>' +
+                '</div>';
+            }).join("");
+
+        // Money & Bills (v3) - days-left computed live from today's date
+        if (!state.bills) state.bills = { trec: false, landTax: false, phone: false };
+        var todayMid = new Date();
+        todayMid.setHours(0, 0, 0, 0);
+        document.getElementById("bill-list").innerHTML = BILLS.map(function (b) {
+          var dueMid = new Date(b.due.getFullYear(), b.due.getMonth(), b.due.getDate());
+          var daysLeft = Math.round((dueMid - todayMid) / 86400000);
+          var dueText;
+          if (state.bills[b.key]) {
+            dueText = "Paid";
+          } else if (daysLeft < 0) {
+            dueText = "Past due " + Math.abs(daysLeft) + " day" + (Math.abs(daysLeft) === 1 ? "" : "s");
+          } else if (daysLeft === 0) {
+            dueText = "Due today";
+          } else {
+            dueText = daysLeft + " day" + (daysLeft === 1 ? "" : "s") + " left";
+          }
+          return '<div class="bill-row' + (state.bills[b.key] ? " paid" : "") + '">' +
+            '<input type="checkbox" data-bill-toggle="' + b.key + '" ' + (state.bills[b.key] ? "checked" : "") + ' aria-label="Mark ' + escHtml(b.name) + ' paid" />' +
+            '<div class="bill-text">' + escHtml(b.name) + ' &mdash; ' + escHtml(b.detail) +
+            '<div class="log-row-sub">Due ' + escHtml(b.dueLabel) + '</div></div>' +
+            '<div class="bill-due">' + dueText + '</div>' +
+            '</div>';
+        }).join("");
+
+        renderTimer();
+        renderHistory();
+      }
+
+      function renderHistory() {
+        var keys = Object.keys(state.days).sort().reverse();
+        var streak = 0;
+        var checkDate = new Date();
+        for (var i = 0; i < 365; i++) {
+          var ds = localDateStr(checkDate);
+          var d = state.days[ds];
+          if (d && d.faith && (d.faith.morning || d.faith.bible || d.faith.evening)) {
+            streak++;
+            checkDate.setDate(checkDate.getDate() - 1);
+          } else if (i === 0) {
+            checkDate.setDate(checkDate.getDate() - 1);
+          } else {
+            break;
+          }
+        }
+        document.getElementById("faith-total-streak").textContent = "Faith Streak: " + streak + " day" + (streak === 1 ? "" : "s");
+
+        // v3: Energy - last 7 days as a simple row of numbers
+        var weekEl = document.getElementById("energy-week");
+        var weekChips = [];
+        for (var wi = 0; wi < 7; wi++) {
+          var wd = new Date();
+          wd.setDate(wd.getDate() - wi);
+          var wds = localDateStr(wd);
+          var wday = state.days[wds];
+          var wval = (wday && wday.energy) ? wday.energy : null;
+          var wlabel = (wd.getMonth() + 1) + "/" + wd.getDate();
+          weekChips.push('<span class="energy-week-chip">' + wlabel + ': ' + (wval ? '<strong>' + wval + '/5</strong>' : '&ndash;') + '</span>');
+        }
+        weekEl.innerHTML = weekChips.join("");
+
+        var list = document.getElementById("history-list");
+        if (keys.length === 0) {
+          list.innerHTML = '<p class="muted-note">No saved days yet.</p>';
+          return;
+        }
+        list.innerHTML = keys.map(function (k) {
+          var d = state.days[k];
+          var w = round1((d.water || []).reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0));
+          var p = round1((d.pee || []).reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0));
+          var c = (d.coffee || []).reduce(function (s, x) { return s + (Number(x.shots) || 0); }, 0);
+          var cal = (d.food || []).reduce(function (s, x) { return s + (Number(x.cal) || 0); }, 0) + (d.coffee || []).reduce(function (s, x) { return s + (Number(x.cal) || 0); }, 0);
+          var sub = "Water " + w + " oz | Pee " + p + " oz | Coffee " + c + " shots | Food " + cal + " cal";
+          if (d.energy) sub += " | Energy " + d.energy + "/5";
+          if ((d.provided || []).length) sub += " | God provided: " + d.provided.length;
+          return '<div class="log-row">' +
+            '<div class="log-row-main"><div class="log-row-title">' + formatDisplayDate(k) + '</div>' +
+            '<div class="log-row-sub">' + sub + '</div></div>' +
+            '<button type="button" class="btn btn-outline btn-sm" data-jump-date="' + k + '">Open</button>' +
+            '</div>';
+        }).join("");
+      }
+
+      // Walk Timer
+      function updateWalkButtons() {
+        var startBtn = document.getElementById("btn-walk-start");
+        var stopBtn = document.getElementById("btn-walk-stop");
+        if (state.walkActiveStart) {
+          startBtn.textContent = "Walking...";
+          startBtn.disabled = true;
+          stopBtn.disabled = false;
+          if (!walkInterval) {
+            walkInterval = setInterval(updateWalkTimerDisplay, 500);
+          }
+        } else {
+          startBtn.textContent = "Start Walk";
+          startBtn.disabled = false;
+          stopBtn.disabled = true;
+          if (walkInterval) {
+            clearInterval(walkInterval);
+            walkInterval = null;
+          }
+        }
+        updateWalkTimerDisplay();
+      }
+
+      function updateWalkTimerDisplay() {
+        var el = document.getElementById("walk-timer-display");
+        if (!state.walkActiveStart) {
+          el.textContent = "00:00";
+          return;
+        }
+        var secs = Math.max(0, Math.floor((Date.now() - state.walkActiveStart) / 1000));
+        var m = Math.floor(secs / 60);
+        var s = secs % 60;
+        el.textContent = pad(m) + ":" + pad(s);
+      }
+
+      // Simple Timer
+      function renderTimer() {
+        var t = state.timer;
+        document.getElementById("timer-mode-pill").textContent = t.mode === "countdown" ? "Countdown" : "Stopwatch";
+        var secs = t.mode === "countdown" ? t.remainingSec : t.elapsedSec;
+        var h = Math.floor(secs / 3600);
+        var m = Math.floor((secs % 3600) / 60);
+        var s = secs % 60;
+        document.getElementById("simple-timer-display").textContent =
+          h > 0 ? (pad(h) + ":" + pad(m) + ":" + pad(s)) : (pad(m) + ":" + pad(s));
+        document.getElementById("btn-timer-start").textContent = t.running ? "Pause" : "Start";
+      }
+
+      function startTimerLoop() {
+        if (simpleTimerInterval) clearInterval(simpleTimerInterval);
+        simpleTimerInterval = setInterval(function () {
+          var t = state.timer;
+          if (!t.running) return;
+          var now = Date.now();
+          var diff = Math.floor((now - (t.lastTick || now)) / 1000);
+          if (diff < 1) return;
+          t.lastTick = now;
+          if (t.mode === "countdown") {
+            t.remainingSec = Math.max(0, t.remainingSec - diff);
+            if (t.remainingSec === 0) {
+              t.running = false;
+              clearInterval(simpleTimerInterval);
+              simpleTimerInterval = null;
+              fireLoudAlert("Timer finished!", "Your " + Math.round(t.durationSec / 60) + "-minute timer is done.");
+              showToast("Timer finished!");
+            }
+          } else {
+            t.elapsedSec += diff;
+          }
+          saveState();
+          renderTimer();
+        }, 500);
+      }
+
+      // Build Plain Text Summary (no em-dashes or en-dashes)
+      function buildDaySummary() {
+        var k = state.currentDate;
+        var d = getDay(k);
+        var lines = [];
+        lines.push("DAILY DESK SUMMARY - " + k);
+        lines.push("--------------------------------");
+
+        var sleepMins = calcSleepMinutes(d.sleepBed, d.sleepWake);
+        if (d.sleepBed || d.sleepWake) {
+          lines.push("Sleep: Bed " + (d.sleepBed ? formatTime12(d.sleepBed) : "N/A") +
+            ", Wake " + (d.sleepWake ? formatTime12(d.sleepWake) : "N/A") +
+            (sleepMins !== null ? " (" + formatDurationMins(sleepMins) + ")" : ""));
+        } else {
+          lines.push("Sleep: Not logged");
+        }
+
+        var waterOz = round1(d.water.reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0));
+        var peeOz = round1(d.pee.reduce(function (s, x) { return s + (Number(x.oz) || 0); }, 0));
+        var net = round1(waterOz - peeOz);
+        lines.push("Water In: " + waterOz + " oz");
+        if (d.pee.length > 0) {
+          var colors = d.pee.map(function (p) { return p.oz + "oz " + p.color + " (" + formatTime12(p.time) + ")"; }).join(", ");
+          lines.push("Pee Out: " + peeOz + " oz total [" + colors + "]");
+        } else {
+          lines.push("Pee Out: 0 oz");
+        }
+        lines.push("In vs Out: " + waterOz + " oz in vs " + peeOz + " oz out (Net " + (net >= 0 ? "+" : "") + net + " oz)");
+
+        var shots = d.coffee.reduce(function (s, x) { return s + (Number(x.shots) || 0); }, 0);
+        if (d.coffee.length > 0) {
+          var coffeeDetails = d.coffee.map(function (c) {
+            return c.shots + " shot" + (c.shots === 1 ? "" : "s") + (c.note ? " " + c.note : "") + " (" + formatTime12(c.time) + ")";
+          }).join(", ");
+          lines.push("Coffee: " + shots + " shot" + (shots === 1 ? "" : "s") + " (~" + (shots * 100) + " mg) [" + coffeeDetails + "]");
+        } else {
+          lines.push("Coffee: 0 shots (0 mg)");
+        }
+
+        lines.push("Prayer & Bible: Morning Prayer [" + (d.faith.morning ? "x" : " ") + "], Bible Reading [" + (d.faith.bible ? "x" : " ") + "], Evening Prayer [" + (d.faith.evening ? "x" : " ") + "]");
+
+        if (d.energy) {
+          lines.push("Energy: " + d.energy + "/5 (1 = dragging, 5 = strong)");
+        } else {
+          lines.push("Energy: Not logged");
+        }
+
+        if ((d.provided || []).length > 0) {
+          lines.push("God Provided:");
+          d.provided.forEach(function (pv) {
+            lines.push("  - " + pv.text);
+          });
+        } else {
+          lines.push("God Provided: None logged");
+        }
+
+        if (d.walks.length > 0) {
+          var walkMins = d.walks.reduce(function (s, x) { return s + (Number(x.mins) || 0); }, 0);
+          var walkDist = d.walks.reduce(function (s, x) { return s + (Number(x.dist) || 0); }, 0);
+          lines.push("Walking: " + walkMins + " min, " + walkDist.toFixed(1) + " mi");
+        } else {
+          lines.push("Walking: None logged");
+        }
+
+        var totalCal = d.food.reduce(function (s, x) { return s + (Number(x.cal) || 0); }, 0);
+        if (d.food.length > 0) {
+          lines.push("Food (" + totalCal + " cal total):");
+          d.food.forEach(function (f) {
+            lines.push("  - " + f.name + " (" + f.cal + " cal, " + (f.meal || "Meal") + ")");
+          });
+        } else {
+          lines.push("Food: None logged (0 cal)");
+        }
+
+        if (d.sessions.length > 0) {
+          lines.push("Sessions (" + d.sessions.length + "):");
+          d.sessions.forEach(function (s) {
+            lines.push("  - " + s.date + " at " + formatTime12(s.time) + (s.notes ? " - " + s.notes : ""));
+          });
+        } else {
+          lines.push("Sessions: None logged");
+        }
+
+        if (state.tasks.length > 0) {
+          lines.push("Tasks:");
+          state.tasks.forEach(function (t) {
+            lines.push("  [" + (t.done ? "x" : " ") + "] " + t.text + (t.due ? " (" + t.due + ")" : ""));
+          });
+        }
+
+        return lines.join("\n");
+      }
+
+      function copyTextToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text).then(function () {
+            return true;
+          }).catch(function () {
+            return fallbackCopy(text);
+          });
+        }
+        return Promise.resolve(fallbackCopy(text));
+      }
+
+      function fallbackCopy(text) {
+        try {
+          var ta = document.createElement("textarea");
+          ta.value = text;
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          var ok = document.execCommand("copy");
+          document.body.removeChild(ta);
+          return ok;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function openSummaryModal() {
+        var text = buildDaySummary();
+        document.getElementById("summary-text").textContent = text;
+        document.getElementById("summary-modal").classList.add("open");
+        copyTextToClipboard(text).then(function (ok) {
+          if (ok) showToast("Day Summary copied!");
+        });
+      }
+
+      // Event Listeners
+      document.querySelectorAll(".nav-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var tab = btn.getAttribute("data-tab");
+          document.querySelectorAll(".nav-btn").forEach(function (b) { b.classList.remove("active"); });
+          document.querySelectorAll(".tab-panel").forEach(function (p) { p.classList.remove("active"); });
+          btn.classList.add("active");
+          document.getElementById("tab-" + tab).classList.add("active");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+
+      document.getElementById("btn-dark-toggle").addEventListener("click", function () {
+        state.dark = !state.dark;
+        saveState();
+        renderAll();
+      });
+
+      function shiftDate(delta) {
+        var p = state.currentDate.split("-");
+        var dt = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+        dt.setDate(dt.getDate() + delta);
+        state.currentDate = localDateStr(dt);
+        document.getElementById("session-date").value = state.currentDate;
+        saveState();
+        renderAll();
+      }
+
+      document.getElementById("btn-prev-day").addEventListener("click", function () { shiftDate(-1); });
+      document.getElementById("btn-next-day").addEventListener("click", function () { shiftDate(1); });
+      document.getElementById("btn-today").addEventListener("click", function () {
+        state.currentDate = localDateStr();
+        document.getElementById("session-date").value = state.currentDate;
+        saveState();
+        renderAll();
+      });
+
+      // Sleep
+      document.getElementById("sleep-bed").addEventListener("change", function (e) {
+        getDay().sleepBed = e.target.value;
+        saveState();
+        renderAll();
+      });
+      document.getElementById("sleep-wake").addEventListener("change", function (e) {
+        getDay().sleepWake = e.target.value;
+        saveState();
+        renderAll();
+      });
+      document.getElementById("btn-bed-now").addEventListener("click", function () {
+        getDay().sleepBed = nowTimeStr();
+        saveState();
+        renderAll();
+        showToast("Bed time set");
+      });
+      document.getElementById("btn-wake-now").addEventListener("click", function () {
+        getDay().sleepWake = nowTimeStr();
+        saveState();
+        renderAll();
+        showToast("Wake time set");
+      });
+
+      // Water
+      function addWater(oz) {
+        if (!oz || oz <= 0) return;
+        getDay().water.push({ id: Date.now() + Math.random(), oz: oz, time: nowTimeStr() });
+        saveState();
+        renderAll();
+        showToast("+" + oz + " oz water logged");
+      }
+      document.querySelectorAll("[data-water]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          addWater(parseFloat(btn.getAttribute("data-water")));
+        });
+      });
+      document.getElementById("btn-water-add").addEventListener("click", function () {
+        var inp = document.getElementById("water-custom");
+        var val = round1(parseFloat(inp.value));
+        if (!val || val <= 0) return showToast("Enter ounces first");
+        addWater(val);
+        inp.value = "";
+      });
+
+      // Pee
+      document.querySelectorAll("[data-pee-color]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          selectedPeeColor = btn.getAttribute("data-pee-color");
+          document.querySelectorAll("[data-pee-color]").forEach(function (b) { b.classList.remove("selected"); });
+          btn.classList.add("selected");
+        });
+      });
+      function addPee(oz) {
+        if (!oz || oz <= 0) return;
+        getDay().pee.push({ id: Date.now() + Math.random(), oz: oz, color: selectedPeeColor, time: nowTimeStr() });
+        saveState();
+        renderAll();
+        showToast("+" + oz + " oz (" + selectedPeeColor + ") logged");
+      }
+      document.querySelectorAll("[data-pee-oz]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          addPee(parseFloat(btn.getAttribute("data-pee-oz")));
+        });
+      });
+      document.getElementById("btn-pee-add").addEventListener("click", function () {
+        var inp = document.getElementById("pee-custom");
+        var val = round1(parseFloat(inp.value));
+        if (!val || val <= 0) return showToast("Enter ounces first");
+        addPee(val);
+        inp.value = "";
+      });
+
+      // Coffee
+      function addCoffee(shots, note, customTime, cal) {
+        getDay().coffee.push({ id: Date.now() + Math.random(), shots: shots, note: note || "", time: customTime || nowTimeStr(), cal: cal || 0 });
+        saveState();
+        renderAll();
+        showToast("+" + shots + " coffee shot" + (shots === 1 ? "" : "s"));
+      }
+      document.getElementById("btn-coffee-1").addEventListener("click", function () { addCoffee(1, ""); });
+      document.getElementById("btn-coffee-3").addEventListener("click", function () { addCoffee(3, "Smoothie"); });
+      document.getElementById("coffee-time-btn").addEventListener("click", function () {
+        var cur = document.getElementById("coffee-custom-time").value || nowTimeStr();
+        openTimePicker("Coffee Time", cur, function (val) {
+          document.getElementById("coffee-custom-time").value = val;
+          document.getElementById("coffee-time-btn").firstElementChild.textContent = val ? formatTime12(val) : "Now";
+        });
+      });
+      document.getElementById("btn-coffee-custom").addEventListener("click", function () {
+        var shots = parseInt(document.getElementById("coffee-custom-shots").value, 10) || 1;
+        var note = document.getElementById("coffee-custom-note").value.trim();
+        var calEl = document.getElementById("coffee-custom-cal");
+        var cal = parseInt(calEl.value, 10);
+        if (isNaN(cal) || cal < 0) cal = 0;
+        var t = document.getElementById("coffee-custom-time").value || nowTimeStr();
+        addCoffee(shots, note, t, cal);
+        document.getElementById("coffee-custom-note").value = "";
+        calEl.value = "";
+        document.getElementById("coffee-custom-time").value = "";
+        document.getElementById("coffee-time-btn").firstElementChild.textContent = "Now";
+      });
+
+      // Faith
+      document.getElementById("chk-morning-prayer").addEventListener("change", function (e) {
+        getDay().faith.morning = e.target.checked;
+        saveState();
+        renderAll();
+      });
+      document.getElementById("chk-bible-reading").addEventListener("change", function (e) {
+        getDay().faith.bible = e.target.checked;
+        saveState();
+        renderAll();
+      });
+      document.getElementById("chk-evening-prayer").addEventListener("change", function (e) {
+        getDay().faith.evening = e.target.checked;
+        saveState();
+        renderAll();
+      });
+      document.getElementById("btn-toggle-verses").addEventListener("click", function () {
+        var box = document.getElementById("kjv-verses");
+        var hidden = box.style.display === "none";
+        box.style.display = hidden ? "block" : "none";
+        this.textContent = hidden ? "Hide Daily KJV Verses" : "Show Daily KJV Verses";
+      });
+
+      // v3: Energy check-in - one value per day, tappable to change
+      document.querySelectorAll("[data-energy]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var val = parseInt(btn.getAttribute("data-energy"), 10);
+          getDay().energy = val;
+          saveState();
+          renderAll();
+          showToast("Energy logged: " + val + "/5");
+        });
+      });
+
+      // v3: God Provided - one line per provision, saved per day
+      document.getElementById("btn-provided-add").addEventListener("click", function () {
+        var inp = document.getElementById("provided-input");
+        var text = inp.value.trim();
+        if (!text) return showToast("Write what God brought through first");
+        getDay().provided.push({ id: Date.now() + Math.random(), text: text, time: nowTimeStr() });
+        inp.value = "";
+        saveState();
+        renderAll();
+        showToast("Logged - God provided!");
+      });
+      document.getElementById("provided-input").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          document.getElementById("btn-provided-add").click();
+        }
+      });
+
+      // v3: Money & Bills - Paid checkbox persists, strikes the row through
+      document.getElementById("bill-list").addEventListener("change", function (e) {
+        var key = e.target.getAttribute("data-bill-toggle");
+        if (!key) return;
+        if (!state.bills) state.bills = { trec: false, landTax: false, phone: false };
+        state.bills[key] = e.target.checked;
+        saveState();
+        renderAll();
+        showToast(e.target.checked ? "Marked paid" : "Marked unpaid");
+      });
+
+      // Walk
+      document.getElementById("btn-walk-start").addEventListener("click", function () {
+        state.walkActiveStart = Date.now();
+        saveState();
+        updateWalkButtons();
+        showToast("Walk started");
+      });
+      document.getElementById("btn-walk-stop").addEventListener("click", function () {
+        if (!state.walkActiveStart) return;
+        var mins = Math.max(1, Math.round((Date.now() - state.walkActiveStart) / 60000));
+        var dist = parseFloat(document.getElementById("walk-dist").value) || 0;
+        getDay().walks.push({ id: Date.now() + Math.random(), mins: mins, dist: dist, time: nowTimeStr() });
+        state.walkActiveStart = null;
+        document.getElementById("walk-dist").value = "";
+        saveState();
+        renderAll();
+        showToast("Walk saved (" + mins + " min)");
+      });
+      document.getElementById("btn-walk-preset").addEventListener("click", function () {
+        document.getElementById("walk-dist").value = "1.3";
+      });
+      document.getElementById("btn-walk-manual").addEventListener("click", function () {
+        var mins = parseInt(document.getElementById("walk-mins").value, 10);
+        var dist = parseFloat(document.getElementById("walk-dist").value) || 0;
+        if (!mins || mins <= 0) return showToast("Enter walk minutes");
+        getDay().walks.push({ id: Date.now() + Math.random(), mins: mins, dist: dist, time: nowTimeStr() });
+        document.getElementById("walk-mins").value = "";
+        document.getElementById("walk-dist").value = "";
+        saveState();
+        renderAll();
+        showToast("Walk logged");
+      });
+
+      // Food
+      function addFood(name, cal, meal) {
+        getDay().food.push({ id: Date.now() + Math.random(), name: name, cal: cal, meal: meal, time: nowTimeStr() });
+        var exists = state.recentFoods.some(function (f) { return f.name.toLowerCase() === name.toLowerCase() && f.cal === cal; });
+        if (!exists) {
+          state.recentFoods.unshift({ name: name, cal: cal });
+          if (state.recentFoods.length > 8) state.recentFoods.pop();
+        }
+        saveState();
+        renderAll();
+        showToast("Food logged (" + cal + " cal)");
+      }
+      document.getElementById("btn-food-add").addEventListener("click", function () {
+        var nameEl = document.getElementById("food-name");
+        var calEl = document.getElementById("food-cal");
+        var mealEl = document.getElementById("food-meal");
+        var name = nameEl.value.trim();
+        var cal = parseInt(calEl.value, 10);
+        if (isNaN(cal) || cal < 0) cal = 0;
+        if (!name && cal <= 0) return showToast("Enter food name or calories");
+        if (!name) name = "Meal total";
+        addFood(name, cal, mealEl.value);
+        nameEl.value = "";
+        calEl.value = "";
+      });
+      document.getElementById("food-recent-chips").addEventListener("click", function (e) {
+        var idx = e.target.getAttribute("data-recent-food");
+        if (idx === null) return;
+        var rf = state.recentFoods[parseInt(idx, 10)];
+        if (rf) addFood(rf.name, rf.cal, document.getElementById("food-meal").value);
+      });
+
+      // Sessions
+      document.getElementById("btn-session-now").addEventListener("click", function () {
+        document.getElementById("session-date").value = state.currentDate;
+        var t = nowTimeStr();
+        document.getElementById("session-time").value = t;
+        document.getElementById("session-time-btn").firstElementChild.textContent = formatTime12(t);
+      });
+      document.getElementById("btn-session-add").addEventListener("click", function () {
+        var date = document.getElementById("session-date").value || state.currentDate;
+        var time = document.getElementById("session-time").value || nowTimeStr();
+        var notes = document.getElementById("session-notes").value.trim();
+        getDay(date).sessions.push({ id: Date.now() + Math.random(), date: date, time: time, notes: notes });
+        document.getElementById("session-notes").value = "";
+        saveState();
+        renderAll();
+        showToast("Session logged");
+      });
+
+      // Tasks
+      document.getElementById("btn-task-add").addEventListener("click", function () {
+        var inp = document.getElementById("task-input");
+        var due = document.getElementById("task-due");
+        var text = inp.value.trim();
+        if (!text) return showToast("Enter a task");
+        state.tasks.push({ id: Date.now() + Math.random(), text: text, due: due.value.trim(), done: false });
+        inp.value = "";
+        due.value = "";
+        saveState();
+        renderAll();
+      });
+      document.getElementById("task-list").addEventListener("change", function (e) {
+        var id = e.target.getAttribute("data-task-toggle");
+        if (!id) return;
+        state.tasks.forEach(function (t) {
+          if (String(t.id) === id) t.done = e.target.checked;
+        });
+        saveState();
+        renderAll();
+      });
+      document.getElementById("task-list").addEventListener("click", function (e) {
+        var id = e.target.getAttribute("data-task-del");
+        if (!id) return;
+        state.tasks = state.tasks.filter(function (t) { return String(t.id) !== id; });
+        saveState();
+        renderAll();
+      });
+      document.getElementById("loud-alert-dismiss").addEventListener("click", function () {
+        document.getElementById("loud-alert").style.display = "none";
+      });
+      document.getElementById("btn-loud-on").addEventListener("click", function () {
+        if (window.Notification && Notification.permission !== "granted") {
+          Notification.requestPermission().then(function () {
+            fireLoudAlert("Loud reminders on", "Test: you should hear the chime and feel a buzz. Task reminders will now shout, not whisper.");
+          });
+        } else {
+          fireLoudAlert("Loud reminders on", "Test: you should hear the chime and feel a buzz. Task reminders will now shout, not whisper.");
+        }
+      });
+      document.getElementById("btn-test-sound").addEventListener("click", function () {
+        fireLoudAlert("Test alert", "If you heard the chime and felt a buzz, loud reminders work on this phone.");
+      });
+
+      // Simple Timer
+      document.querySelectorAll("[data-timer-min]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var mins = parseInt(btn.getAttribute("data-timer-min"), 10);
+          state.timer.mode = "countdown";
+          state.timer.durationSec = mins * 60;
+          state.timer.remainingSec = mins * 60;
+          state.timer.running = false;
+          saveState();
+          renderTimer();
+        });
+      });
+      document.getElementById("btn-timer-set").addEventListener("click", function () {
+        var mins = parseInt(document.getElementById("timer-custom-min").value, 10);
+        if (!mins || mins <= 0) return showToast("Enter minutes");
+        state.timer.mode = "countdown";
+        state.timer.durationSec = mins * 60;
+        state.timer.remainingSec = mins * 60;
+        state.timer.running = false;
+        saveState();
+        renderTimer();
+      });
+      document.getElementById("btn-timer-stopwatch").addEventListener("click", function () {
+        state.timer.mode = "stopwatch";
+        state.timer.elapsedSec = 0;
+        state.timer.running = false;
+        saveState();
+        renderTimer();
+      });
+      document.getElementById("btn-timer-start").addEventListener("click", function () {
+        var t = state.timer;
+        if (t.mode === "countdown" && t.remainingSec === 0) {
+          t.remainingSec = t.durationSec || 600;
+        }
+        t.running = !t.running;
+        t.lastTick = Date.now();
+        saveState();
+        renderTimer();
+        if (t.running) startTimerLoop();
+      });
+      document.getElementById("btn-timer-reset").addEventListener("click", function () {
+        var t = state.timer;
+        t.running = false;
+        if (t.mode === "countdown") t.remainingSec = t.durationSec;
+        else t.elapsedSec = 0;
+        saveState();
+        renderTimer();
+      });
+
+      // Delegated Deletes & History Jump
+      document.querySelector("main").addEventListener("click", function (e) {
+        var delType = e.target.getAttribute("data-del-type");
+        var delId = e.target.getAttribute("data-del-id");
+        if (delType && delId) {
+          var day = getDay();
+          day[delType] = day[delType].filter(function (x) { return String(x.id) !== delId; });
+          saveState();
+          renderAll();
+          return;
+        }
+        var editCoffeeId = e.target.getAttribute("data-edit-coffee-time");
+        if (editCoffeeId) {
+          var day = getDay();
+          var entry = day.coffee.find(function (x) { return String(x.id) === editCoffeeId; });
+          if (entry) {
+            openTimePicker("Edit Coffee Time", entry.time, function (val) {
+              if (val) {
+                entry.time = val;
+                saveState();
+                renderAll();
+                showToast("Coffee time updated");
+              }
+            });
+          }
+          return;
+        }
+        var jump = e.target.getAttribute("data-jump-date");
+        if (jump) {
+          state.currentDate = jump;
+          saveState();
+          renderAll();
+          document.querySelector('.nav-btn[data-tab="today"]').click();
+        }
+      });
+
+      // Copy Summary Modal
+      document.getElementById("btn-copy-top").addEventListener("click", openSummaryModal);
+      document.getElementById("btn-copy-bottom").addEventListener("click", openSummaryModal);
+      document.getElementById("btn-modal-copy").addEventListener("click", function () {
+        var txt = document.getElementById("summary-text").textContent;
+        copyTextToClipboard(txt).then(function (ok) {
+          showToast(ok ? "Copied to clipboard!" : "Select and copy the text above");
+        });
+      });
+      document.getElementById("btn-modal-close").addEventListener("click", function () {
+        document.getElementById("summary-modal").classList.remove("open");
+      });
+
+      // Confirm Modal
+      document.getElementById("btn-confirm-cancel").addEventListener("click", closeConfirm);
+      document.getElementById("btn-confirm-ok").addEventListener("click", function () {
+        var fn = pendingConfirmFn;
+        closeConfirm();
+        if (fn) fn();
+      });
+
+      // Backup Export / Import / Clear
+      document.getElementById("btn-export-json").addEventListener("click", function () {
+        var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "daily-desk-backup-" + localDateStr() + ".json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast("Backup downloaded");
+      });
+
+      document.getElementById("import-json-file").addEventListener("change", function (e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+          try {
+            var imported = JSON.parse(ev.target.result);
+            if (!imported || typeof imported !== "object" || !imported.days) {
+              return showToast("Invalid backup file");
+            }
+            state = Object.assign(defaultState(), imported);
+            saveState();
+            renderAll();
+            showToast("Backup restored!");
+          } catch (err) {
+            showToast("Could not read backup file");
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = "";
+      });
+
+      document.getElementById("btn-clear-day").addEventListener("click", function () {
+        openConfirm("Clear Current Day?", "This will erase all entries for " + state.currentDate + ".", function () {
+          state.days[state.currentDate] = emptyDay();
+          saveState();
+          renderAll();
+          showToast("Day cleared");
+        });
+      });
+
+      document.getElementById("btn-clear-all").addEventListener("click", function () {
+        openConfirm("Erase All Data?", "This will permanently delete all saved days and tasks from this device.", function () {
+          state = defaultState();
+          saveState();
+          renderAll();
+          showToast("All data erased");
+        });
+      });
+
+      // Custom In-Page Time Picker (mobile-friendly at any font size)
+      var tpState = { target: null, h12: 12, m: 0, ampm: "PM", onSave: null };
+      (function initTimePicker() {
+        var hrsEl = document.getElementById("tp-hours");
+        for (var h = 1; h <= 12; h++) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "tp-cell";
+          b.setAttribute("data-tp-h", h);
+          b.textContent = h;
+          hrsEl.appendChild(b);
+        }
+        var minsEl = document.getElementById("tp-mins");
+        for (var m = 0; m < 60; m += 5) {
+          var mb = document.createElement("button");
+          mb.type = "button";
+          mb.className = "tp-cell";
+          mb.setAttribute("data-tp-m", m);
+          mb.textContent = ":" + pad(m);
+          minsEl.appendChild(mb);
+        }
+      })();
+
+      function renderTimePicker() {
+        document.getElementById("tp-preview").textContent = tpState.h12 + ":" + pad(tpState.m) + " " + tpState.ampm;
+        document.getElementById("tp-am").classList.toggle("selected", tpState.ampm === "AM");
+        document.getElementById("tp-pm").classList.toggle("selected", tpState.ampm === "PM");
+        document.querySelectorAll("[data-tp-h]").forEach(function (b) {
+          b.classList.toggle("selected", parseInt(b.getAttribute("data-tp-h"), 10) === tpState.h12);
+        });
+        document.querySelectorAll("[data-tp-m]").forEach(function (b) {
+          b.classList.toggle("selected", parseInt(b.getAttribute("data-tp-m"), 10) === tpState.m);
+        });
+      }
+
+      function openTimePicker(title, currentHHMM, onSave) {
+        document.getElementById("tp-title").textContent = title;
+        var use = currentHHMM || nowTimeStr();
+        var parts = use.split(":");
+        var h24 = parseInt(parts[0], 10);
+        var m = parseInt(parts[1], 10);
+        if (isNaN(h24)) h24 = 12;
+        if (isNaN(m)) m = 0;
+        tpState.ampm = h24 >= 12 ? "PM" : "AM";
+        tpState.h12 = h24 % 12 || 12;
+        tpState.m = m;
+        tpState.onSave = onSave;
+        renderTimePicker();
+        document.getElementById("time-modal").classList.add("open");
+      }
+
+      document.getElementById("tp-am").addEventListener("click", function () { tpState.ampm = "AM"; renderTimePicker(); });
+      document.getElementById("tp-pm").addEventListener("click", function () { tpState.ampm = "PM"; renderTimePicker(); });
+      document.getElementById("tp-hours").addEventListener("click", function (e) {
+        var h = e.target.getAttribute("data-tp-h");
+        if (h) { tpState.h12 = parseInt(h, 10); renderTimePicker(); }
+      });
+      document.getElementById("tp-mins").addEventListener("click", function (e) {
+        var m = e.target.getAttribute("data-tp-m");
+        if (m !== null) { tpState.m = parseInt(m, 10); renderTimePicker(); }
+      });
+      document.getElementById("tp-m-minus").addEventListener("click", function () {
+        tpState.m = (tpState.m + 59) % 60;
+        renderTimePicker();
+      });
+      document.getElementById("tp-m-plus").addEventListener("click", function () {
+        tpState.m = (tpState.m + 1) % 60;
+        renderTimePicker();
+      });
+      document.getElementById("tp-cancel").addEventListener("click", function () {
+        document.getElementById("time-modal").classList.remove("open");
+      });
+      document.getElementById("tp-clear").addEventListener("click", function () {
+        document.getElementById("time-modal").classList.remove("open");
+        if (tpState.onSave) tpState.onSave("");
+      });
+      document.getElementById("tp-save").addEventListener("click", function () {
+        var h24 = tpState.h12 % 12;
+        if (tpState.ampm === "PM") h24 += 12;
+        var val = pad(h24) + ":" + pad(tpState.m);
+        document.getElementById("time-modal").classList.remove("open");
+        if (tpState.onSave) tpState.onSave(val);
+      });
+
+      document.getElementById("sleep-bed-btn").addEventListener("click", function () {
+        openTimePicker("Set Bed Time", getDay().sleepBed, function (val) {
+          getDay().sleepBed = val;
+          saveState();
+          renderAll();
+        });
+      });
+      document.getElementById("sleep-wake-btn").addEventListener("click", function () {
+        openTimePicker("Set Wake Time", getDay().sleepWake, function (val) {
+          getDay().sleepWake = val;
+          saveState();
+          renderAll();
+        });
+      });
+      document.getElementById("session-time-btn").addEventListener("click", function () {
+        openTimePicker("Set Session Time", document.getElementById("session-time").value, function (val) {
+          if (val) {
+            document.getElementById("session-time").value = val;
+            document.getElementById("session-time-btn").firstElementChild.textContent = formatTime12(val);
+          }
+        });
+      });
+
+      // Voice input (Web Speech API) — mic buttons only fill the input; Add/Save still up to him
+      var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      var activeMicBtn = null;
+      var activeRecog = null;
+      function stopVoiceInput() {
+        if (activeRecog) {
+          try { activeRecog.stop(); } catch (e) {}
+        }
+        activeRecog = null;
+        if (activeMicBtn) {
+          activeMicBtn.classList.remove("listening");
+          activeMicBtn.textContent = "\uD83C\uDFA4";
+          activeMicBtn = null;
+        }
+      }
+      function setupMicButtons() {
+        var btns = document.querySelectorAll("[data-mic-target]");
+        btns.forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (activeMicBtn === btn) {
+              stopVoiceInput();
+              return;
+            }
+            if (!SpeechRecognition) {
+              showToast("Voice input needs Chrome on your phone");
+              return;
+            }
+            stopVoiceInput();
+            var target = document.getElementById(btn.getAttribute("data-mic-target"));
+            if (!target) return;
+            var recog = new SpeechRecognition();
+            recog.lang = "en-US";
+            recog.interimResults = false;
+            recog.maxAlternatives = 1;
+            recog.onresult = function (ev) {
+              var text = (ev.results[0] && ev.results[0][0] && ev.results[0][0].transcript) || "";
+              text = text.trim();
+              if (text) {
+                target.value = target.value ? target.value.replace(/\s+$/, "") + " " + text : text;
+                target.focus();
+              }
+            };
+            recog.onerror = function (ev) {
+              stopVoiceInput();
+              if (ev.error === "not-allowed" || ev.error === "service-not-allowed") {
+                showToast("Microphone is blocked — allow it in the browser, or just type instead.");
+              } else if (ev.error === "no-speech") {
+                showToast("Didn't catch that — try again or type it.");
+              } else if (ev.error !== "aborted") {
+                showToast("Voice didn't work — just type it instead.");
+              }
+            };
+            recog.onend = function () {
+              stopVoiceInput();
+            };
+            try {
+              recog.start();
+            } catch (e) {
+              showToast("Voice didn't start — just type it instead.");
+              return;
+            }
+            activeRecog = recog;
+            activeMicBtn = btn;
+            btn.classList.add("listening");
+            btn.textContent = "Listening… tap to stop";
+          });
+        });
+      }
+
+      // Init
+      if (state.timer && state.timer.running) {
+        startTimerLoop();
+      }
+      checkTaskReminders();
+      setInterval(checkTaskReminders, 30000);
+      setupMicButtons();
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
